@@ -1,0 +1,43 @@
+Folder PATH listing for volume Data
+Volume serial number is 98AF-A095
+D:.
+¦   .env
+¦   .eslintrc.js
+¦   .gitignore
+¦   abc.txt
+¦   package-lock.json
+¦   package.json
+¦   tsconfig.json
+¦   
++---@types
+¦       session.d.ts
+¦       
++---node_modules
+¦   ¦   .package-lock.json
+¦   ¦   
+¦   +---.bin
+¦   
+¦           
++---src
+    ¦   app.ts
+    ¦   server.ts
+    ¦   
+    +---controllers
+    ¦       notes.ts
+    ¦       users.ts
+    ¦       
+    +---middleware
+    ¦       auth.ts
+    ¦       
+    +---models
+    ¦       note.ts
+    ¦       user.ts
+    ¦       
+    +---routes
+    ¦       notes.ts
+    ¦       users.ts
+    ¦       
+    +---util
+            assertIsDefined.ts
+            validateenv.ts
+            
