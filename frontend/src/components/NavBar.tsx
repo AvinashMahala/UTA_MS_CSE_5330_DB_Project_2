@@ -22,6 +22,36 @@ const NavBar=({loggedInUser, onSignUpClicked, onLoginClicked, onLogoutSuccessful
                 <Navbar.Toggle aria-controls="main-navbar" />
                 <Navbar.Collapse id="main-navbar">
                     <Nav>
+                        <Nav.Link as={Link} to="/customer">
+                            Customer
+                        </Nav.Link>
+                    </Nav>
+                    <Nav>
+                        <Nav.Link as={Link} to="/cartype">
+                            Car Type
+                        </Nav.Link>
+                    </Nav>
+                    <Nav>
+                        <Nav.Link as={Link} to="/owner">
+                            Owner
+                        </Nav.Link>
+                    </Nav>
+                    <Nav>
+                        <Nav.Link as={Link} to="/car">
+                            Car
+                        </Nav.Link>
+                    </Nav>
+                    <Nav>
+                        <Nav.Link as={Link} to="/rental">
+                            Rental
+                        </Nav.Link>
+                    </Nav>
+                    <Nav>
+                        <Nav.Link as={Link} to="/caravailability">
+                            Car Availability
+                        </Nav.Link>
+                    </Nav>
+                    <Nav>
                         <Nav.Link as={Link} to="/privacy">
                             Privacy
                         </Nav.Link>
