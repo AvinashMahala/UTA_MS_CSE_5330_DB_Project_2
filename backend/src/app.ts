@@ -8,6 +8,8 @@ import session from "express-session";
 import oracledb from "oracledb";
 import env from "./util/validateenv";
 import { requiresAuth } from "./middleware/auth";
+import { createTablesIfNotExist } from "./oracleDbSetup";
+import { insertSampleData } from "./insertSampleData";
 
 interface SessionData extends session.SessionData {
   [key: string]: any;
@@ -30,6 +32,24 @@ oracledb
   })
   .then((pool) => {
     console.log("Oracle Connection Pool Created!");
+    // Add pool to app.locals for further usage in the app
+    app.locals.pool = pool;
+    // Invoke createTablesIfNotExist to create tables if they don't exist
+    createTablesIfNotExist(pool)
+      .then(() => {
+        console.log("Tables checked/created successfully");
+        // Insert sample data
+        insertSampleData(app.locals.pool)
+          .then(() => {
+            console.log("Sample data inserted successfully");
+          })
+          .catch((error) => {
+            console.error("Error inserting sample data:", error);
+          });
+      })
+      .catch((error) => {
+        console.error("Error checking/creating tables:", error);
+      });
 
     app.use(
       session({
