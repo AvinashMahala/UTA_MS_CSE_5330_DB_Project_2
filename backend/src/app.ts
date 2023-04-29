@@ -11,6 +11,7 @@ import { requiresAuth } from "./middleware/auth";
 import { createTablesIfNotExist } from "./oracleDbSetup";
 import { insertSampleData } from "./insertSampleData";
 import { CustomerRoutes } from "./routes/CustomerRoutes";
+import { CarTypeRoutes } from "./routes/CarTypeRoutes";
 
 interface SessionData extends session.SessionData {
   [key: string]: any;
@@ -120,9 +121,13 @@ oracledb
       })
     );
 
-     // Initialize Customer routes
+    // Initialize Customer routes
     const customerRoutes = new CustomerRoutes(app);
     app.use('/api/customers', customerRoutes.router);
+
+    // Initialize Car Type routes
+    const carTypeRoutes = new CarTypeRoutes(app);
+    app.use('/api/cartype', carTypeRoutes.router);
 
     app.use("/api/users", userRoutes);
     app.use("/api/notes", requiresAuth, notesRoutes);
