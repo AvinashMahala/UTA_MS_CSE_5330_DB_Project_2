@@ -12,6 +12,9 @@ import { createTablesIfNotExist } from "./oracleDbSetup";
 import { insertSampleData } from "./insertSampleData";
 import { CustomerRoutes } from "./routes/CustomerRoutes";
 import { CarTypeRoutes } from "./routes/CarTypeRoutes";
+import { CarRoutes } from "./routes/CarRoutes";
+import { RentalRoutes } from "./routes/RentalRoutes";
+import { CarAvailabilityRoutes } from "./routes/CarAvailabilityRoutes";
 
 interface SessionData extends session.SessionData {
   [key: string]: any;
@@ -128,6 +131,22 @@ oracledb
     // Initialize Car Type routes
     const carTypeRoutes = new CarTypeRoutes(app);
     app.use('/api/cartype', carTypeRoutes.router);
+
+    // Initialize Owner routes
+    const ownerRoutes = new CarTypeRoutes(app);
+    app.use('/api/owner', ownerRoutes.router);
+
+    // Initialize Car routes
+    const carRoutes = new CarRoutes(app);
+    app.use('/api/car', carRoutes.router);
+
+    // Initialize Rental routes
+    const rentalRoutes = new RentalRoutes(app);
+    app.use('/api/rental', rentalRoutes.router);
+
+    // Initialize CarAvailability routes
+    const carAvailabilityRoutes = new CarAvailabilityRoutes(app);
+    app.use('/api/caravailability', carAvailabilityRoutes.router);
 
     app.use("/api/users", userRoutes);
     app.use("/api/notes", requiresAuth, notesRoutes);
