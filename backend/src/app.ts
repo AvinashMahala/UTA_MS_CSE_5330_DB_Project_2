@@ -15,6 +15,7 @@ import { CarTypeRoutes } from "./routes/CarTypeRoutes";
 import { CarRoutes } from "./routes/CarRoutes";
 import { RentalRoutes } from "./routes/RentalRoutes";
 import { CarAvailabilityRoutes } from "./routes/CarAvailabilityRoutes";
+import { OwnerRoutes } from "./routes/OwnerRoutes";
 
 interface SessionData extends session.SessionData {
   [key: string]: any;
@@ -133,7 +134,7 @@ oracledb
     app.use('/api/cartype', carTypeRoutes.router);
 
     // Initialize Owner routes
-    const ownerRoutes = new CarTypeRoutes(app);
+    const ownerRoutes = new OwnerRoutes(app);
     app.use('/api/owner', ownerRoutes.router);
 
     // Initialize Car routes
