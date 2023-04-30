@@ -37,7 +37,11 @@ export type Person = {
 
 const RetrieveAllCustomersView = () => {
 
-    
+  type CustomerInput = {
+    idNo: number;
+    name: string;
+    phone: string;
+  };
 
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [tableData, setTableData] = useState<Person[]>(() => []);
@@ -48,13 +52,36 @@ const RetrieveAllCustomersView = () => {
     const handleCreateNewRow = (values: Person) => {
       tableData.push(values);
       setTableData([...tableData]);
+
+      const insertCustomer: CustomerInput = {
+        idNo: 0,
+        name: values.name,
+        phone: values.phone,
+      };
+
+      // Send the API request to update the customer
+      CustomerApi.createCustomer(insertCustomer).then(() => {
+        console.log("Customer added");
+      });
+
     };
-  
+    
     const handleSaveRowEdits: MaterialReactTableProps<Person>['onEditingRowSave'] =
       async ({ exitEditingMode, row, values }) => {
         if (!Object.keys(validationErrors).length) {
           tableData[row.index] = values;
+
+          
           //send/receive api updates here, then refetch or update local table data for re-render
+          const updatedCustomer: CustomerInput = {
+            idNo: parseInt(values.idNo),
+            name: values.name,
+            phone: values.phone,
+          };
+    
+          // Send the API request to update the customer
+          await CustomerApi.updateCustomer(updatedCustomer.idNo, updatedCustomer);
+
           setTableData([...tableData]);
           exitEditingMode(); //required to exit editing mode and close modal
         }
@@ -67,11 +94,17 @@ const RetrieveAllCustomersView = () => {
     const handleDeleteRow = useCallback(
       (row: MRT_Row<Person>) => {
         if (
-          !window.confirm(`Are you sure you want to delete ${row.getValue('firstName')}`)
+          !window.confirm(`Are you sure you want to delete ${row.getValue('name')}`)
         ) {
           return;
         }
         //send api delete request here, then refetch or update local table data for re-render
+
+        CustomerApi.deleteCustomer(row.getValue('idNo')).then(() => {
+          console.log("Customer deleted");
+        });
+
+
         tableData.splice(row.index, 1);
         setTableData([...tableData]);
       },
@@ -114,7 +147,10 @@ const RetrieveAllCustomersView = () => {
           enableColumnOrdering: false,
           enableEditing: false, //disable editing on this column
           enableSorting: false,
+          enableHiding: false,
           size: 80,
+          editable: "never"
+          
         },
         {
           accessorKey: 'name',
@@ -136,7 +172,7 @@ const RetrieveAllCustomersView = () => {
       [getCommonEditTextFieldProps],
     );
 
-
+    
     useEffect(() => {
       CustomerApi.fetchCustomers().then((customers) => {
         //tableData=customers;
@@ -158,8 +194,10 @@ const RetrieveAllCustomersView = () => {
           }}
           columns={columns}
           data={tableData}
+          
           editingMode="modal" //default
           enableColumnOrdering
+          initialState={{ columnVisibility: { idNo: false } }} //hide firstName column by default
           enableEditing
           onEditingRowSave={handleSaveRowEdits}
           onEditingRowCancel={handleCancelRowEdits}
@@ -236,7 +274,7 @@ const RetrieveAllCustomersView = () => {
                 gap: '1.5rem',
               }}
             >
-              {columns.map((column) => (
+              {columns.filter(column=>column.accessorKey !=="idNo").map((column) => (
                 <TextField
                   key={column.accessorKey}
                   label={column.header}

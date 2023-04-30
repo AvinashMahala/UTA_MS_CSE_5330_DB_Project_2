@@ -29,8 +29,8 @@ export class CustomerService {
   public async createCustomer(customer: Customer): Promise<Customer | undefined> {
     const connection = await this.pool.getConnection();
     const result = await connection.execute<Customer>(
-      `INSERT INTO AVINASH_TBL_CUSTOMER (IDNO, NAME, PHONE) VALUES (:idno, :name, :phone) RETURNING *`,
-      [customer.idNo, customer.name, customer.phone]
+      `INSERT INTO AVINASH_TBL_CUSTOMER (NAME, PHONE) VALUES (:name, :phone)`,
+      [customer.name, customer.phone]
     );
     connection.commit();
     connection.close();

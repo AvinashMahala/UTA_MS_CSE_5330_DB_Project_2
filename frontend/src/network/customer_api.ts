@@ -52,13 +52,13 @@ export async function createCustomer(customer: CustomerInput):Promise<Customer>{
 
 export async function updateCustomer(customerId: number, customer: CustomerInput): Promise<Customer>{
     const response = await fetchData("/api/customers/"+customerId,{
-        method:"PUT",
+        method:"PATCH",
         headers:{
             "Content-Type":"application/json",
         },
         body:JSON.stringify(customer),
     });
-    return response.json();
+    return customer;
 }
 
 
