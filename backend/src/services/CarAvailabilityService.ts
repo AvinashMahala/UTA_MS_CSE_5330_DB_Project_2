@@ -29,7 +29,7 @@ export class CarAvailabilityService {
   public async createCarAvailability(carAvailability: CarAvailability): Promise<CarAvailability | undefined> {
     const connection = await this.pool.getConnection();
     const result = await connection.execute<CarAvailability>(
-      `INSERT INTO AVINASH_TBL_CAR_AVAILABILITY (AVAILABILITYID, CARID, STARTDATE, ENDDATE) VALUES (:availabilityid, :carid, :startdate, :enddate) RETURNING *`,
+      `INSERT INTO AVINASH_TBL_CAR_AVAILABILITY (AVAILABILITYID, CARID, STARTDATE, ENDDATE) VALUES (:availabilityid, :carid, :startdate, :enddate)`,
       [carAvailability.availabilityId, carAvailability.carId, carAvailability.startDate, carAvailability.endDate]
     );
     connection.commit();
@@ -44,7 +44,7 @@ export class CarAvailabilityService {
   public async updateCarAvailability(id: number, carAvailability: CarAvailability): Promise<CarAvailability | undefined> {
     const connection = await this.pool.getConnection();
     const result = await connection.execute<CarAvailability>(
-      `UPDATE AVINASH_TBL_CAR_AVAILABILITY SET CARID = :carid, STARTDATE = :startdate, ENDDATE = :enddate WHERE AVAILABILITYID = :id RETURNING *`,
+      `UPDATE AVINASH_TBL_CAR_AVAILABILITY SET CARID = :carid, STARTDATE = :startdate, ENDDATE = :enddate WHERE AVAILABILITYID = :id`,
       [carAvailability.carId, carAvailability.startDate, carAvailability.endDate, id]
     );
     connection.commit();

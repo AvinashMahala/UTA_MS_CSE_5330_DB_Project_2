@@ -29,7 +29,7 @@ export class CarService {
   public async createCar(car: Car): Promise<Car | undefined> {
     const connection = await this.pool.getConnection();
     const result = await connection.execute<Car>(
-      `INSERT INTO AVINASH_TBL_CAR (VEHICLEID, MODEL, YEAR, TYPEID, OWNERID) VALUES (:vehicleid, :model, :year, :typeid, :ownerid) RETURNING *`,
+      `INSERT INTO AVINASH_TBL_CAR (VEHICLEID, MODEL, YEAR, TYPEID, OWNERID) VALUES (:vehicleid, :model, :year, :typeid, :ownerid)`,
       [car.vehicleId, car.model, car.year, car.typeId, car.ownerId]
     );
     connection.commit();
@@ -44,7 +44,7 @@ export class CarService {
   public async updateCar(id: number, car: Car): Promise<Car | undefined> {
     const connection = await this.pool.getConnection();
     const result = await connection.execute<Car>(
-      `UPDATE AVINASH_TBL_CAR SET MODEL = :model, YEAR = :year, TYPEID = :typeid, OWNERID = :ownerid WHERE VEHICLEID = :id RETURNING *`,
+      `UPDATE AVINASH_TBL_CAR SET MODEL = :model, YEAR = :year, TYPEID = :typeid, OWNERID = :ownerid WHERE VEHICLEID = :id`,
       [car.model, car.year, car.typeId, car.ownerId, id]
     );
     connection.commit();

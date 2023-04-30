@@ -29,7 +29,7 @@ export class CarTypeService {
   public async createCarType(carType: CarType): Promise<CarType | undefined> {
     const connection = await this.pool.getConnection();
     const result = await connection.execute<CarType>(
-      `INSERT INTO AVINASH_TBL_CAR_TYPE (TYPEID, TYPENAME, DAILYRATE, WEEKLYRATE, LUXURYFLAG) VALUES (:typeid, :typename, :dailyrate, :weeklyrate, :luxuryflag) RETURNING *`,
+      `INSERT INTO AVINASH_TBL_CAR_TYPE (TYPEID, TYPENAME, DAILYRATE, WEEKLYRATE, LUXURYFLAG) VALUES (:typeid, :typename, :dailyrate, :weeklyrate, :luxuryflag)`,
       [carType.typeId, carType.typeName, carType.dailyRate, carType.weeklyRate, carType.luxuryFlag]
     );
     connection.commit();
@@ -44,7 +44,7 @@ export class CarTypeService {
   public async updateCarType(id: number, carType: CarType): Promise<CarType | undefined> {
     const connection = await this.pool.getConnection();
     const result = await connection.execute<CarType>(
-      `UPDATE AVINASH_TBL_CAR_TYPE SET TYPENAME = :typename, DAILYRATE = :dailyrate, WEEKLYRATE = :weeklyrate, LUXURYFLAG = :luxuryflag WHERE TYPEID = :id RETURNING *`,
+      `UPDATE AVINASH_TBL_CAR_TYPE SET TYPENAME = :typename, DAILYRATE = :dailyrate, WEEKLYRATE = :weeklyrate, LUXURYFLAG = :luxuryflag WHERE TYPEID = :id`,
       [carType.typeName, carType.dailyRate, carType.weeklyRate, carType.luxuryFlag, id]
     );
     connection.commit();

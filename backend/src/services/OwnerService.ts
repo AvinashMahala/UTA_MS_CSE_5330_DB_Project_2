@@ -29,7 +29,7 @@ export class OwnerService {
   public async createOwner(owner: Owner): Promise<Owner | undefined> {
     const connection = await this.pool.getConnection();
     const result = await connection.execute<Owner>(
-      `INSERT INTO AVINASH_TBL_OWNER (OWNERID, OWNERTYPE, NAME, BANKNAME) VALUES (:ownerid, :ownertype, :name, :bankname) RETURNING *`,
+      `INSERT INTO AVINASH_TBL_OWNER (OWNERID, OWNERTYPE, NAME, BANKNAME) VALUES (:ownerid, :ownertype, :name, :bankname)`,
       [owner.ownerId, owner.ownerType, owner.name, owner.bankName]
     );
     connection.commit();
@@ -44,7 +44,7 @@ export class OwnerService {
   public async updateOwner(id: number, owner: Owner): Promise<Owner | undefined> {
     const connection = await this.pool.getConnection();
     const result = await connection.execute<Owner>(
-      `UPDATE AVINASH_TBL_OWNER SET OWNERTYPE = :ownertype, NAME = :name, BANKNAME = :bankname WHERE OWNERID = :id RETURNING *`,
+      `UPDATE AVINASH_TBL_OWNER SET OWNERTYPE = :ownertype, NAME = :name, BANKNAME = :bankname WHERE OWNERID = :id`,
       [owner.ownerType, owner.name, owner.bankName, id]
     );
     connection.commit();
