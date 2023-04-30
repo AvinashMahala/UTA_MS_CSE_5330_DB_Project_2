@@ -16,7 +16,7 @@ export class CustomerRoutes {
     this.router.get('/', this.customerController.getAllCustomers);
     this.router.get('/:id', this.customerController.getCustomerById);
     this.router.post('/', this.customerController.createCustomer);
-    this.router.put('/:id', this.customerController.updateCustomer);
+    this.router.patch('/:id', this.customerController.updateCustomer);
     this.router.delete('/:id', this.customerController.deleteCustomer);
   }
 }

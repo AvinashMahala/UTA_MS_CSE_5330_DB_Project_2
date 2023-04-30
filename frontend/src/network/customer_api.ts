@@ -30,3 +30,39 @@ export async function fetchCustomers(): Promise<Customer[]>{
     return response.json();
 }
 
+
+
+export interface CustomerInput{
+    idNo: number,
+    name: string,
+    phone: string,
+}
+
+export async function createCustomer(customer: CustomerInput):Promise<Customer>{
+    const response = await fetchData("/api/customers",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json",
+        },
+        body:JSON.stringify(customer),
+    });
+    return response.json();
+}
+
+
+export async function updateCustomer(customerId: number, customer: CustomerInput): Promise<Customer>{
+    const response = await fetchData("/api/customers/"+customerId,{
+        method:"PUT",
+        headers:{
+            "Content-Type":"application/json",
+        },
+        body:JSON.stringify(customer),
+    });
+    return response.json();
+}
+
+
+
+export async function deleteCustomer(customerId: string){
+    await fetchData("/api/customers/"+customerId, {method: "DELETE"});
+}

@@ -44,7 +44,7 @@ export class CustomerService {
   public async updateCustomer(id: number, customer: Customer): Promise<Customer | undefined> {
     const connection = await this.pool.getConnection();
     const result = await connection.execute<Customer>(
-      `UPDATE AVINASH_TBL_CUSTOMER SET NAME = :name, PHONE = :phone WHERE IDNO = :id RETURNING *`,
+      `UPDATE AVINASH_TBL_CUSTOMER SET NAME = :name, PHONE = :phone WHERE IDNO = :id`,
       [customer.name, customer.phone, id]
     );
     connection.commit();
