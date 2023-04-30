@@ -16,7 +16,7 @@ export class OwnerRoutes {
     this.router.get('/', this.ownerController.getAllOwners);
     this.router.get('/:id', this.ownerController.getOwnerById);
     this.router.post('/', this.ownerController.createOwner);
-    this.router.put('/:id', this.ownerController.updateOwner);
+    this.router.patch('/:id', this.ownerController.updateOwner);
     this.router.delete('/:id', this.ownerController.deleteOwner);
   }
 }

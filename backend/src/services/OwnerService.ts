@@ -9,11 +9,11 @@ export class OwnerService {
     this.pool = app.locals.pool;
   }
 
-  public async getAllOwners(): Promise<Owner[][] | undefined> {
+  public async getAllOwners(): Promise<Owner[] | undefined> {
     const connection = await this.pool.getConnection();
-    const result = await connection.execute<Owner[]>(`SELECT * FROM AVINASH_TBL_OWNER`);
+    const result = await connection.execute<any>(`SELECT * FROM AVINASH_TBL_OWNER`);
     connection.close();
-    return result.rows;
+    return result.rows?.map((owner) => new Owner(owner[0], owner[1], owner[2],owner[3]));
   }
 
   public async getOwnerById(id: number): Promise<Owner | undefined> {
@@ -29,8 +29,8 @@ export class OwnerService {
   public async createOwner(owner: Owner): Promise<Owner | undefined> {
     const connection = await this.pool.getConnection();
     const result = await connection.execute<Owner>(
-      `INSERT INTO AVINASH_TBL_OWNER (OWNERID, OWNERTYPE, NAME, BANKNAME) VALUES (:ownerid, :ownertype, :name, :bankname)`,
-      [owner.ownerId, owner.ownerType, owner.name, owner.bankName]
+      `INSERT INTO AVINASH_TBL_OWNER (OWNERTYPE, NAME, BANKNAME) VALUES (:ownertype, :name, :bankname)`,
+      [owner.ownerType, owner.name, owner.bankName]
     );
     connection.commit();
     connection.close();
