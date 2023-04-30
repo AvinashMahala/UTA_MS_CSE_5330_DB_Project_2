@@ -16,7 +16,7 @@ export class CarRoutes {
     this.router.get('/', this.carController.getAllCars);
     this.router.get('/:id', this.carController.getCarById);
     this.router.post('/', this.carController.createCar);
-    this.router.put('/:id', this.carController.updateCar);
+    this.router.patch('/:id', this.carController.updateCar);
     this.router.delete('/:id', this.carController.deleteCar);
   }
 }

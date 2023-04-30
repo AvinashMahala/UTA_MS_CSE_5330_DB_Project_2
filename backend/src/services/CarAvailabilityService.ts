@@ -9,11 +9,11 @@ export class CarAvailabilityService {
     this.pool = app.locals.pool;
   }
 
-  public async getAllCarAvailabilities(): Promise<CarAvailability[][] | undefined> {
+  public async getAllCarAvailabilities(): Promise<CarAvailability[] | undefined> {
     const connection = await this.pool.getConnection();
-    const result = await connection.execute<CarAvailability[]>(`SELECT * FROM AVINASH_TBL_CAR_AVAILABILITY`);
+    const result = await connection.execute<any>(`SELECT * FROM AVINASH_TBL_CAR_AVAILABILITY`);
     connection.close();
-    return result.rows;
+    return result.rows?.map((carAvailability) => new CarAvailability(carAvailability[0], carAvailability[1], carAvailability[2],carAvailability[3]));
   }
 
   public async getCarAvailabilityById(id: number): Promise<CarAvailability | undefined> {
@@ -29,8 +29,8 @@ export class CarAvailabilityService {
   public async createCarAvailability(carAvailability: CarAvailability): Promise<CarAvailability | undefined> {
     const connection = await this.pool.getConnection();
     const result = await connection.execute<CarAvailability>(
-      `INSERT INTO AVINASH_TBL_CAR_AVAILABILITY (AVAILABILITYID, CARID, STARTDATE, ENDDATE) VALUES (:availabilityid, :carid, :startdate, :enddate)`,
-      [carAvailability.availabilityId, carAvailability.carId, carAvailability.startDate, carAvailability.endDate]
+      `INSERT INTO AVINASH_TBL_CAR_AVAILABILITY (CARID, STARTDATE, ENDDATE) VALUES (:carid, :startdate, :enddate)`,
+      [carAvailability.carId, carAvailability.startDate, carAvailability.endDate]
     );
     connection.commit();
     connection.close();

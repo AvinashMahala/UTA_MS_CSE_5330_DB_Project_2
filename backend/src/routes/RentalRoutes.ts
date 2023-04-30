@@ -16,7 +16,7 @@ export class RentalRoutes {
     this.router.get('/', this.rentalController.getAllRentals);
     this.router.get('/:id', this.rentalController.getRentalById);
     this.router.post('/', this.rentalController.createRental);
-    this.router.put('/:id', this.rentalController.updateRental);
+    this.router.patch('/:id', this.rentalController.updateRental);
     this.router.delete('/:id', this.rentalController.deleteRental);
   }
 }

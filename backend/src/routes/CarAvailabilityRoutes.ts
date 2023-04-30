@@ -16,7 +16,7 @@ export class CarAvailabilityRoutes {
     this.router.get('/', this.carAvailabilityController.getAllCarAvailabilities);
     this.router.get('/:id', this.carAvailabilityController.getCarAvailabilityById);
     this.router.post('/', this.carAvailabilityController.createCarAvailability);
-    this.router.put('/:id', this.carAvailabilityController.updateCarAvailability);
+    this.router.patch('/:id', this.carAvailabilityController.updateCarAvailability);
     this.router.delete('/:id', this.carAvailabilityController.deleteCarAvailability);
   }
 }

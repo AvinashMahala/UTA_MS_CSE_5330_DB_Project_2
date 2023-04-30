@@ -9,11 +9,11 @@ export class RentalService {
     this.pool = app.locals.pool;
   }
 
-  public async getAllRentals(): Promise<Rental[][] | undefined> {
+  public async getAllRentals(): Promise<Rental[] | undefined> {
     const connection = await this.pool.getConnection();
-    const result = await connection.execute<Rental[]>(`SELECT * FROM AVINASH_TBL_RENTAL`);
+    const result = await connection.execute<any>(`SELECT * FROM AVINASH_TBL_RENTAL`);
     connection.close();
-    return result.rows;
+    return result.rows?.map((rental) => new Rental(rental[0], rental[1], rental[2],rental[3],rental[4], rental[5], rental[6],rental[7],rental[8]));
   }
 
   public async getRentalById(id: number): Promise<Rental | undefined> {
@@ -29,8 +29,8 @@ export class RentalService {
   public async createRental(rental: Rental): Promise<Rental | undefined> {
     const connection = await this.pool.getConnection();
     const result = await connection.execute<Rental>(
-      `INSERT INTO AVINASH_TBL_RENTAL (RENTALID, RENTALTYPE, NOOFDAYS, NOOFWEEKS, STARTDATE, RETURNDATE, AMOUNTDUE, CARID, CUSTOMERID) VALUES (:rentalid, :rentaltype, :noofdays, :noofweeks, :startdate, :returndate, :amountdue, :carid, :customerid)`,
-      [rental.rentalId, rental.rentalType, rental.noOfDays, rental.noOfWeeks, rental.startDate, rental.returnDate, rental.amountDue, rental.carId, rental.customerId]
+      `INSERT INTO AVINASH_TBL_RENTAL (RENTALTYPE, NOOFDAYS, NOOFWEEKS, STARTDATE, RETURNDATE, AMOUNTDUE, CARID, CUSTOMERID) VALUES (:rentalid, :rentaltype, :noofdays, :noofweeks, :startdate, :returndate, :amountdue, :carid, :customerid)`,
+      [rental.rentalType, rental.noOfDays, rental.noOfWeeks, rental.startDate, rental.returnDate, rental.amountDue, rental.carId, rental.customerId]
     );
     connection.commit();
     connection.close();

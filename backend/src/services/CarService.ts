@@ -9,11 +9,11 @@ export class CarService {
     this.pool = app.locals.pool;
   }
 
-  public async getAllCars(): Promise<Car[][] | undefined> {
+  public async getAllCars(): Promise<Car[] | undefined> {
     const connection = await this.pool.getConnection();
-    const result = await connection.execute<Car[]>(`SELECT * FROM AVINASH_TBL_CAR`);
+    const result = await connection.execute<any>(`SELECT * FROM AVINASH_TBL_CAR`);
     connection.close();
-    return result.rows;
+    return result.rows?.map((car) => new Car(car[0], car[1], car[2],car[3],car[4]));
   }
 
   public async getCarById(id: number): Promise<Car | undefined> {
@@ -29,8 +29,8 @@ export class CarService {
   public async createCar(car: Car): Promise<Car | undefined> {
     const connection = await this.pool.getConnection();
     const result = await connection.execute<Car>(
-      `INSERT INTO AVINASH_TBL_CAR (VEHICLEID, MODEL, YEAR, TYPEID, OWNERID) VALUES (:vehicleid, :model, :year, :typeid, :ownerid)`,
-      [car.vehicleId, car.model, car.year, car.typeId, car.ownerId]
+      `INSERT INTO AVINASH_TBL_CAR (MODEL, YEAR, TYPEID, OWNERID) VALUES (:model, :year, :typeid, :ownerid)`,
+      [car.model, car.year, car.typeId, car.ownerId]
     );
     connection.commit();
     connection.close();
