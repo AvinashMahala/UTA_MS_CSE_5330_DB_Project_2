@@ -11,54 +11,81 @@ export class CustomerService {
 
   public async getAllCustomers(): Promise<Customer[] | undefined> {
     const connection = await this.pool.getConnection();
-    const result = await connection.execute<any>(`SELECT * FROM AVINASH_TBL_CUSTOMER`);
-    connection.close();
-    return result.rows?.map((customer) => new Customer(customer[0], customer[1], customer[2]));
+    try {
+      const result = await connection.execute<any>(`SELECT * FROM AVINASH_TBL_CUSTOMER`);
+      return result.rows?.map((customer) => new Customer(customer[0], customer[1], customer[2]));
+    } catch (error) {
+      console.log(error);
+    }finally{
+      connection.close();
+    }
+    
   }
 
   public async getCustomerById(id: number): Promise<Customer | undefined> {
     const connection = await this.pool.getConnection();
-    const result = await connection.execute<Customer>(`SELECT * FROM AVINASH_TBL_CUSTOMER WHERE IDNO = :id`, [id]);
-    connection.close();
-    if (result.rows !== undefined) {
-        return result.rows[0];
-      }
-        return undefined;
+    try {
+      const result = await connection.execute<Customer>(`SELECT * FROM AVINASH_TBL_CUSTOMER WHERE IDNO = :id`, [id]);
+      if (result.rows !== undefined) {
+          return result.rows[0];
+        }
+      return undefined;
+    } catch (error) {
+      console.log(error);
+    }finally{
+      connection.close();
+    }
   }
 
   public async createCustomer(customer: Customer): Promise<Customer | undefined> {
     const connection = await this.pool.getConnection();
-    const result = await connection.execute<Customer>(
-      `INSERT INTO AVINASH_TBL_CUSTOMER (NAME, PHONE) VALUES (:name, :phone)`,
-      [customer.name, customer.phone]
-    );
-    connection.commit();
-    connection.close();
-    
-    if (result.rows !== undefined) {
+    try {
+      const result = await connection.execute<Customer>(
+        `INSERT INTO AVINASH_TBL_CUSTOMER (NAME, PHONE) VALUES (:name, :phone)`,
+        [customer.name, customer.phone]
+      );
+      connection.commit();
+      if (result.rows !== undefined) {
         return result.rows[0];
       }
         return undefined;
+    } catch (error) {
+      console.log(error);
+    }finally{
+      connection.close();
+    }
   }
 
   public async updateCustomer(id: number, customer: Customer): Promise<Customer | undefined> {
     const connection = await this.pool.getConnection();
-    const result = await connection.execute<Customer>(
-      `UPDATE AVINASH_TBL_CUSTOMER SET NAME = :name, PHONE = :phone WHERE IDNO = :id`,
-      [customer.name, customer.phone, id]
-    );
-    connection.commit();
-    connection.close();
-    if (result.rows !== undefined) {
-        return result.rows[0];
-      }
-        return undefined;
+    try {
+      const result = await connection.execute<Customer>(
+        `UPDATE AVINASH_TBL_CUSTOMER SET NAME = :name, PHONE = :phone WHERE IDNO = :id`,
+        [customer.name, customer.phone, id]
+      );
+      connection.commit();
+      if (result.rows !== undefined) {
+          return result.rows[0];
+        }
+          return undefined;
+    } catch (error) {
+      console.log(error);
+    }finally{
+      connection.close();
+    }
+    
   }
 
   public async deleteCustomer(id: number): Promise<void> {
     const connection = await this.pool.getConnection();
-    await connection.execute(`DELETE FROM AVINASH_TBL_CUSTOMER WHERE IDNO = :id`, [id]);
-    connection.commit();
-    connection.close();
+    try {
+      await connection.execute(`DELETE FROM AVINASH_TBL_CUSTOMER WHERE IDNO = :id`, [id]);
+      connection.commit();
+    } catch (error) {
+      console.log(error);
+    }finally{
+      connection.close();
+    }
+    
   }
 }
