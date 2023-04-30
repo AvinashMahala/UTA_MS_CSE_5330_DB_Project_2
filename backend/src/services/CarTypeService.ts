@@ -9,11 +9,11 @@ export class CarTypeService {
     this.pool = app.locals.pool;
   }
 
-  public async getAllCarTypes(): Promise<CarType[][] | undefined> {
+  public async getAllCarTypes(): Promise<CarType[] | undefined> {
     const connection = await this.pool.getConnection();
-    const result = await connection.execute<CarType[]>(`SELECT * FROM AVINASH_TBL_CAR_TYPE`);
+    const result = await connection.execute<any>(`SELECT * FROM AVINASH_TBL_CAR_TYPE`);
     connection.close();
-    return result.rows;
+    return result.rows?.map((carType) => new CarType(carType[0], carType[1], carType[2],carType[3], carType[4]));
   }
 
   public async getCarTypeById(id: number): Promise<CarType | undefined> {
@@ -29,8 +29,8 @@ export class CarTypeService {
   public async createCarType(carType: CarType): Promise<CarType | undefined> {
     const connection = await this.pool.getConnection();
     const result = await connection.execute<CarType>(
-      `INSERT INTO AVINASH_TBL_CAR_TYPE (TYPEID, TYPENAME, DAILYRATE, WEEKLYRATE, LUXURYFLAG) VALUES (:typeid, :typename, :dailyrate, :weeklyrate, :luxuryflag)`,
-      [carType.typeId, carType.typeName, carType.dailyRate, carType.weeklyRate, carType.luxuryFlag]
+      `INSERT INTO AVINASH_TBL_CAR_TYPE (TYPENAME, DAILYRATE, WEEKLYRATE, LUXURYFLAG) VALUES (:typename, :dailyrate, :weeklyrate, :luxuryflag)`,
+      [carType.typeName, carType.dailyRate, carType.weeklyRate, carType.luxuryFlag]
     );
     connection.commit();
     connection.close();
