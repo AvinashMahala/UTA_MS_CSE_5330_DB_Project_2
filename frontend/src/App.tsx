@@ -58,7 +58,7 @@ function App() {
 			/>
       <Route
 				path='/customer'
-				element={<CustomerPage />}
+				element={<CustomerPage/>}
 			/>
       <Route
 				path='/cartype'

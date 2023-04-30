@@ -9,11 +9,11 @@ export class CustomerService {
     this.pool = app.locals.pool;
   }
 
-  public async getAllCustomers(): Promise<Customer[][] | undefined> {
+  public async getAllCustomers(): Promise<Customer[] | undefined> {
     const connection = await this.pool.getConnection();
-    const result = await connection.execute<Customer[]>(`SELECT * FROM AVINASH_TBL_CUSTOMER`);
+    const result = await connection.execute<any>(`SELECT * FROM AVINASH_TBL_CUSTOMER`);
     connection.close();
-    return result.rows;
+    return result.rows?.map((customer) => new Customer(customer[0], customer[1], customer[2]));
   }
 
   public async getCustomerById(id: number): Promise<Customer | undefined> {

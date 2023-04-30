@@ -1,26 +1,20 @@
-import { Container } from "react-bootstrap";
-//import bootstrap-table
-
-import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
-import BootstrapTable from 'react-bootstrap-table-next';
-
-
-
+import React, { useMemo } from 'react';
+import MaterialReactTable from 'material-react-table';
+import type { MRT_ColumnDef } from 'material-react-table'; // If using TypeScript (optional, but recommended)
+import { User } from '../models/user';
+import { Container } from 'react-bootstrap';
+import RetrieveAllCustomersView from '../components/customers/RetrieveAllCustomersView';
 
 
-const products = [ 
-    { id: 1, name: 'George', price: 100 },
-];
-const columns = [{
-  dataField: 'id',
-  text: 'Product ID'
-}, {
-  dataField: 'name',
-  text: 'Product Name'
-}, {
-  dataField: 'price',
-  text: 'Product Price'
-}];
 
-export default () =>
-  <BootstrapTable keyField='id' data={ products } columns={ columns } />
+const CustomerPage = () => {
+  return (
+    <Container>
+      
+    {<RetrieveAllCustomersView />}
+      
+    </Container>
+  );
+};
+
+export default CustomerPage;
