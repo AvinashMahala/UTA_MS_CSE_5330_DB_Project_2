@@ -37,31 +37,10 @@ export type Person = {
 
 const RetrieveAllCustomersView = () => {
 
-    const data=[
-        {
-            idNo: 201,
-            name:"J.Smith",
-            phone:"817-272-3000",
-        },
-        {
-            idNo: 202,
-            name:"J.Doe",
-            phone:"817-272-3001",
-        },
-        {
-            idNo: 203,
-            name:"J.Doe",
-            phone:"817-272-3002",
-        },
-    ]
-
-    const states = useMemo<string[]>(() => ['CA', 'NY', 'TX', 'FL'], []);
-
-
-
+    
 
     const [createModalOpen, setCreateModalOpen] = useState(false);
-    const [tableData, setTableData] = useState<Person[]>(() => data);
+    const [tableData, setTableData] = useState<Person[]>(() => []);
     const [validationErrors, setValidationErrors] = useState<{
       [cellId: string]: string;
     }>({});
@@ -156,6 +135,15 @@ const RetrieveAllCustomersView = () => {
       ],
       [getCommonEditTextFieldProps],
     );
+
+
+    useEffect(() => {
+      CustomerApi.fetchCustomers().then((customers) => {
+        //tableData=customers;
+        setTableData(customers);
+        console.log(customers);
+      });
+    }, []);
   
     return (
       <>
