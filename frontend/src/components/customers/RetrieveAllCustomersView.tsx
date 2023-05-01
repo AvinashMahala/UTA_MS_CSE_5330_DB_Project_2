@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
-import { Customer as CustomerModel,CustomerDetailsViewModel } from "../../models/Customer";
+import { Customer as CustomerModel } from "../../models/Customer";
 import * as CustomerApi from "../../network/customer_api";
 import { darken } from "@mui/material";
 
@@ -29,20 +29,18 @@ import {
 import { Delete, Edit } from '@mui/icons-material';
 
 export type Person = {
-  customerId: number;
-  customerName: string;
-  phone: string;
-  customerType: string;
+    idNo: number,
+    name: string,
+    phone: string,
 };
 
 
 const RetrieveAllCustomersView = () => {
 
   type CustomerInput = {
-    customerId: number;
-    customerName: string;
+    idNo: number;
+    name: string;
     phone: string;
-    customerType: string;
   };
 
     const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -56,13 +54,12 @@ const RetrieveAllCustomersView = () => {
       setTableData([...tableData]);
 
       const insertCustomer: CustomerInput = {
-        customerId: 0,
-        customerName: values.customerName,
+        idNo: 0,
+        name: values.name,
         phone: values.phone,
-        customerType: values.customerType,
       };
 
-      // Send the API request to create the customer
+      // Send the API request to update the customer
       CustomerApi.createCustomer(insertCustomer).then(() => {
         console.log("Customer added");
       });
@@ -77,14 +74,13 @@ const RetrieveAllCustomersView = () => {
           
           //send/receive api updates here, then refetch or update local table data for re-render
           const updatedCustomer: CustomerInput = {
-            customerId: parseInt(values.customerId),
-            customerName: values.customerName,
+            idNo: parseInt(values.idNo),
+            name: values.name,
             phone: values.phone,
-            customerType: values.customerType,
           };
     
           // Send the API request to update the customer
-          await CustomerApi.updateCustomer(updatedCustomer.customerId, updatedCustomer);
+          await CustomerApi.updateCustomer(updatedCustomer.idNo, updatedCustomer);
 
           setTableData([...tableData]);
           exitEditingMode(); //required to exit editing mode and close modal
@@ -98,13 +94,13 @@ const RetrieveAllCustomersView = () => {
     const handleDeleteRow = useCallback(
       (row: MRT_Row<Person>) => {
         if (
-          !window.confirm(`Are you sure you want to delete ${row.getValue('customerName')}`)
+          !window.confirm(`Are you sure you want to delete ${row.getValue('name')}`)
         ) {
           return;
         }
         //send api delete request here, then refetch or update local table data for re-render
 
-        CustomerApi.deleteCustomer(row.getValue('customerId')).then(() => {
+        CustomerApi.deleteCustomer(row.getValue('idNo')).then(() => {
           console.log("Customer deleted");
         });
 
@@ -146,18 +142,20 @@ const RetrieveAllCustomersView = () => {
     const columns = useMemo<MRT_ColumnDef<Person>[]>(
       () => [
         {
-          accessorKey: 'customerId',
+          accessorKey: 'idNo',
           header: 'ID',
           enableColumnOrdering: false,
           enableEditing: false, //disable editing on this column
           enableSorting: false,
           enableHiding: false,
+          size: 80,
           editable: "never"
           
         },
         {
-          accessorKey: 'customerName',
+          accessorKey: 'name',
           header: 'Name',
+          size: 140,
           muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
             ...getCommonEditTextFieldProps(cell),
           }),
@@ -165,13 +163,7 @@ const RetrieveAllCustomersView = () => {
         {
           accessorKey: 'phone',
           header: 'Phone Number',
-          muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-            ...getCommonEditTextFieldProps(cell),
-          }),
-        },
-        {
-          accessorKey: 'customerType',
-          header: 'Customer Type',
+          size: 140,
           muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
             ...getCommonEditTextFieldProps(cell),
           }),
@@ -182,19 +174,11 @@ const RetrieveAllCustomersView = () => {
 
     
     useEffect(() => {
-      // CustomerApi.fetchCustomers().then((customers) => {
-      //   //tableData=customers;
-      //   setTableData(customers);
-      //   console.log(customers);
-      // });
-
-      CustomerApi.fetchCustomersView().then((customers) => {
+      CustomerApi.fetchCustomers().then((customers) => {
         //tableData=customers;
         setTableData(customers);
         console.log(customers);
       });
-
-
     }, []);
   
     return (
@@ -212,9 +196,8 @@ const RetrieveAllCustomersView = () => {
           data={tableData}
           editingMode="modal" //default
           enableColumnOrdering
-          initialState={{ density: 'compact',columnVisibility: { customerId: false } }} //hide firstName column by default
+          initialState={{ columnVisibility: { idNo: false } }} //hide firstName column by default
           enableEditing
-          enableHiding={false}
           onEditingRowSave={handleSaveRowEdits}
           onEditingRowCancel={handleCancelRowEdits}
           renderRowActions={({ row, table }) => (
@@ -280,7 +263,7 @@ const RetrieveAllCustomersView = () => {
   
     return (
       <Dialog open={open}>
-        <DialogTitle textAlign="center">Create New Customer</DialogTitle>
+        <DialogTitle textAlign="center">Create New Account</DialogTitle>
         <DialogContent>
           <form onSubmit={(e) => e.preventDefault()}>
             <Stack
@@ -290,7 +273,7 @@ const RetrieveAllCustomersView = () => {
                 gap: '1.5rem',
               }}
             >
-              {columns.filter(column=>column.accessorKey !=="customerId").map((column) => (
+              {columns.filter(column=>column.accessorKey !=="idNo").map((column) => (
                 <TextField
                   key={column.accessorKey}
                   label={column.header}

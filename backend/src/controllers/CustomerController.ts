@@ -14,11 +14,6 @@ export class CustomerController {
     res.json(customers);
   };
 
-  public getAllCustomersView = async (req: Request, res: Response): Promise<void> => {
-    const customers = await this.customerService.getAllCustomersView();
-    res.json(customers);
-  };
-
   public getCustomerById = async (req: Request, res: Response): Promise<void> => {
     const id = parseInt(req.params.id);
     const customer = await this.customerService.getCustomerById(id);

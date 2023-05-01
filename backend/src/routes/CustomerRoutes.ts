@@ -14,8 +14,6 @@ export class CustomerRoutes {
 
   public routes(): void {
     this.router.get('/', this.customerController.getAllCustomers);
-    this.router.get('/view', this.customerController.getAllCustomersView);
-
     this.router.get('/:id', this.customerController.getCustomerById);
     this.router.post('/', this.customerController.createCustomer);
     this.router.patch('/:id', this.customerController.updateCustomer);
