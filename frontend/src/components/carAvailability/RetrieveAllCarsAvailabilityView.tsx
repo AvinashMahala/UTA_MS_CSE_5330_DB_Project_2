@@ -299,7 +299,7 @@ const RetrieveAllCarsAvailabilityView = () => {
         <DialogActions sx={{ p: '1.25rem' }}>
           <Button onClick={onClose}>Cancel</Button>
           <Button color="secondary" onClick={handleSubmit} variant="contained">
-            Create New Car Availability
+            Create New Account
           </Button>
         </DialogActions>
       </Dialog>
