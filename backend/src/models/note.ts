@@ -12,8 +12,3 @@ type Note = InferSchemaType<typeof noteSchema>;
 
 export default model<Note>("Note", noteSchema);
 
-
-
-
-
-

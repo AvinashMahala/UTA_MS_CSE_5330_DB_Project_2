@@ -10,6 +10,12 @@ import NotesPage from "./pages/NotesPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import styles from "./styles/App.module.css";
+import CustomerPage from "./pages/CustomerPage";
+import CarTypePage from "./pages/CarTypePage";
+import OwnerPage from "./pages/OwnerPage";
+import CarPage from "./pages/CarPage";
+import RentalPage from "./pages/RentalPage";
+import CarAvailabilityPage from "./pages/CarAvailabilityPage";
 
 
 function App() {
@@ -49,6 +55,30 @@ function App() {
 			<Route
 				path='/privacy'
 				element={<PrivacyPage />}
+			/>
+      <Route
+				path='/customer'
+				element={<CustomerPage/>}
+			/>
+      <Route
+				path='/cartype'
+				element={<CarTypePage />}
+			/>
+      <Route
+				path='/owner'
+				element={<OwnerPage />}
+			/>
+      <Route
+				path='/car'
+				element={<CarPage />}
+			/>
+      <Route
+				path='/rental'
+				element={<RentalPage />}
+			/>
+      <Route
+				path='/caravailability'
+				element={<CarAvailabilityPage />}
 			/>
 			<Route 
 			path='/*'
