@@ -221,7 +221,7 @@ const RetrieveAllCustomersView = () => {
               onClick={() => setCreateModalOpen(true)}
               variant="contained"
             >
-              Create New Account
+              Create New Customer
             </Button>
           )}
         />
@@ -264,7 +264,7 @@ const RetrieveAllCustomersView = () => {
   
     return (
       <Dialog open={open}>
-        <DialogTitle textAlign="center">Create New Account</DialogTitle>
+        <DialogTitle textAlign="center">Create New Customer</DialogTitle>
         <DialogContent>
           <form onSubmit={(e) => e.preventDefault()}>
             <Stack
@@ -290,7 +290,7 @@ const RetrieveAllCustomersView = () => {
         <DialogActions sx={{ p: '1.25rem' }}>
           <Button onClick={onClose}>Cancel</Button>
           <Button color="secondary" onClick={handleSubmit} variant="contained">
-            Create New Account
+            Create New Customer
           </Button>
         </DialogActions>
       </Dialog>
