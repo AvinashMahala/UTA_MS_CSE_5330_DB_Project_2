@@ -1,5 +1,5 @@
 import { ConflictError, UnauthorizedError } from "../errors/http_errors";
-import { Customer } from "../models/Customer";
+import { Customer, CustomerDetailsViewModel } from "../models/Customer";
 import { User } from "../models/user";
 
 async function fetchData(input: RequestInfo, init?: RequestInit){
@@ -30,12 +30,18 @@ export async function fetchCustomers(): Promise<Customer[]>{
     return response.json();
 }
 
+export async function fetchCustomersView(): Promise<CustomerDetailsViewModel[]>{
+    const response=await fetchData("/api/customers/view",{method:"GET"});
+    return response.json();
+}
+
 
 
 export interface CustomerInput{
-    idNo: number,
-    name: string,
-    phone: string,
+    customerId: number;
+    customerName: string;
+    phone: string;
+    customerType: string;
 }
 
 export async function createCustomer(customer: CustomerInput):Promise<Customer>{
@@ -50,7 +56,7 @@ export async function createCustomer(customer: CustomerInput):Promise<Customer>{
 }
 
 
-export async function updateCustomer(customerId: number, customer: CustomerInput): Promise<Customer>{
+export async function updateCustomer(customerId: number, customer: CustomerInput): Promise<CustomerInput>{
     const response = await fetchData("/api/customers/"+customerId,{
         method:"PATCH",
         headers:{
