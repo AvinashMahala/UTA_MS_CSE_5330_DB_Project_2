@@ -299,7 +299,7 @@ const RetrieveAllOwnersView = () => {
         <DialogActions sx={{ p: '1.25rem' }}>
           <Button onClick={onClose}>Cancel</Button>
           <Button color="secondary" onClick={handleSubmit} variant="contained">
-            Create New Account
+            Create New Owner
           </Button>
         </DialogActions>
       </Dialog>

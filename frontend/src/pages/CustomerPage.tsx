@@ -9,11 +9,11 @@ import RetrieveAllCustomersView from '../components/customers/RetrieveAllCustome
 
 const CustomerPage = () => {
   return (
-    <Container>
+    <>
       
     {<RetrieveAllCustomersView />}
       
-    </Container>
+    </>
   );
 };
 

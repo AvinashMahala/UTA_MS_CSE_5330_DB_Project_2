@@ -189,12 +189,11 @@ const RetrieveAllCustomersView = () => {
               muiTableHeadCellProps: {
                 align: 'center',
               },
-              size: 120,
+              size: 200,
             },
           }}
           columns={columns}
           data={tableData}
-          
           editingMode="modal" //default
           enableColumnOrdering
           initialState={{ columnVisibility: { idNo: false } }} //hide firstName column by default
@@ -221,7 +220,7 @@ const RetrieveAllCustomersView = () => {
               onClick={() => setCreateModalOpen(true)}
               variant="contained"
             >
-              Create New Account
+              Create New Customer
             </Button>
           )}
         />
@@ -290,7 +289,7 @@ const RetrieveAllCustomersView = () => {
         <DialogActions sx={{ p: '1.25rem' }}>
           <Button onClick={onClose}>Cancel</Button>
           <Button color="secondary" onClick={handleSubmit} variant="contained">
-            Create New Account
+            Create New Customer
           </Button>
         </DialogActions>
       </Dialog>
