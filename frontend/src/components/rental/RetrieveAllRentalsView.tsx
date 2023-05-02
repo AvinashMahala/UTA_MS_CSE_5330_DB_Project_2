@@ -24,6 +24,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
+import { formatAmountDue, formatDate, formatNoOfDaysOrWeeks, formatRentalType } from "../../utils/formatDate";
 
 export type Rental = {
     rentalId: number;
@@ -180,6 +181,8 @@ const RetrieveAllRentalsView = () => {
           muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
             ...getCommonEditTextFieldProps(cell),
           }),
+          //customize normal cell render on normal non-aggregated rows
+          Cell: ({ cell }) => <>{formatRentalType(cell.getValue<string>())}</>,
         },
         {
           accessorKey: 'noOfDays',
@@ -188,6 +191,8 @@ const RetrieveAllRentalsView = () => {
           muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
             ...getCommonEditTextFieldProps(cell),
           }),
+          //customize normal cell render on normal non-aggregated rows
+          Cell: ({ cell }) => <>{formatNoOfDaysOrWeeks(cell.getValue<string>())}</>,
         },
         {
             accessorKey: 'noOfWeeks',
@@ -196,6 +201,8 @@ const RetrieveAllRentalsView = () => {
             muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
               ...getCommonEditTextFieldProps(cell),
             }),
+            //customize normal cell render on normal non-aggregated rows
+            Cell: ({ cell }) => <>{formatNoOfDaysOrWeeks(cell.getValue<string>())}</>,
           },
         {
             accessorKey: 'startDate',
@@ -204,6 +211,8 @@ const RetrieveAllRentalsView = () => {
             muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
               ...getCommonEditTextFieldProps(cell),
             }),
+            //customize normal cell render on normal non-aggregated rows
+            Cell: ({ cell }) => <>{formatDate(cell.getValue<string>())}</>,
           },{
             accessorKey: 'returnDate',
             header: 'returnDate',
@@ -211,6 +220,8 @@ const RetrieveAllRentalsView = () => {
             muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
               ...getCommonEditTextFieldProps(cell),
             }),
+            //customize normal cell render on normal non-aggregated rows
+            Cell: ({ cell }) => <>{formatDate(cell.getValue<string>())}</>,
           },{
             accessorKey: 'amountDue',
             header: 'amountDue',
@@ -218,6 +229,8 @@ const RetrieveAllRentalsView = () => {
             muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
               ...getCommonEditTextFieldProps(cell),
             }),
+            //customize normal cell render on normal non-aggregated rows
+            Cell: ({ cell }) => <>{formatAmountDue(cell.getValue<string>())}</>,
           },
           {
             accessorKey: 'carId',

@@ -24,6 +24,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
+import { formatOwnerType } from "../../utils/formatDate";
 
 export type Owner = {
     ownerId: number;
@@ -160,6 +161,8 @@ const RetrieveAllOwnersView = () => {
           muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
             ...getCommonEditTextFieldProps(cell),
           }),
+          //customize normal cell render on normal non-aggregated rows
+          Cell: ({ cell }) => <>{formatOwnerType(cell.getValue<string>())}</>,
         },
         {
           accessorKey: 'name',
