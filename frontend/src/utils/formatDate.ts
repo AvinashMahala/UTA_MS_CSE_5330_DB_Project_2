@@ -78,3 +78,14 @@ export function luxuryFlag(luxuryFlag:string):string{
         return "None";
     }
 }
+
+export function formatBlankField(field:string):string{
+    if(field===null || field===undefined){
+        return "NA";
+    }
+    else{
+        return field;
+    }
+}
+
+
