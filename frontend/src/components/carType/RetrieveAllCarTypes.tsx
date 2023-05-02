@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { CarType as CarTypeModel } from "../../models/CarType";
 import * as CarTypeApi from "../../network/cartypes_api";
 import { darken } from "@mui/material";
-
+import { Select } from "@mui/material";
 
 
 
@@ -124,7 +124,16 @@ const RetrieveAllCarTypesView = () => {
       (
         cell: MRT_Cell<CarType>,
       ): MRT_ColumnDef<CarType>['muiTableBodyCellEditTextFieldProps'] => {
-        return {
+        return cell.column.id === 'luxuryFlag'
+      ? {
+          select: true,
+          children: [{optionKey:"Y",optionLabel:"Yes"},{optionKey:"N",optionLabel:"No"}].map((option) => (
+            <MenuItem key={option.optionKey} value={option.optionKey}>
+              {option.optionLabel}
+            </MenuItem>
+          )),
+        }
+      : {
           error: !!validationErrors[cell.id],
           helperText: validationErrors[cell.id],
           onChange: (e) => {
@@ -288,6 +297,8 @@ const RetrieveAllCarTypesView = () => {
       }, {} as any),
     );
   
+    const [selectedLuxuryFlag, setSelectedLuxuryFlag] = useState('');
+
     const handleSubmit = () => {
       //put your validation logic here
       onSubmit(values);
@@ -306,7 +317,9 @@ const RetrieveAllCarTypesView = () => {
                 gap: '1.5rem',
               }}
             >
-              {columns.filter(column=>column.accessorKey !=="typeId").map((column) => (
+              
+              
+              {columns.filter(column=>column.accessorKey !=="typeId" && column.accessorKey !== "luxuryFlag").map((column) => (
                 <TextField
                   key={column.accessorKey}
                   label={column.header}
@@ -316,6 +329,38 @@ const RetrieveAllCarTypesView = () => {
                   }
                 />
               ))}
+
+{columns
+              .filter((column) => column.accessorKey === "luxuryFlag")
+              .map((column) => (
+                <Select
+                  label={column.header}
+                  key={column.accessorKey}
+                  name={column.accessorKey}
+                  value={selectedLuxuryFlag}
+                  // onChange={(event) => setSelectedOwnerType(event.target.value)}
+                  onChange={(event) =>{
+                    setValues({ ...values, [event.target.name]: event.target.value });
+                    setSelectedLuxuryFlag(event.target.value);
+                  }
+                  }
+                  displayEmpty
+                  sx={{ minWidth: 120 }}
+                >
+                  <MenuItem value="" disabled>
+                  {column.header}
+                  </MenuItem>
+                  {[{optionKey:"Y",optionLabel:"Yes"},{optionKey:"N",optionLabel:"No"}].map((option) => (
+                    <MenuItem
+                      key={option.optionKey}
+                      value={option.optionKey}
+                    >
+                      {option.optionLabel}
+                    </MenuItem>
+                  ))}
+                </Select>
+              ))}
+              
             </Stack>
           </form>
         </DialogContent>
