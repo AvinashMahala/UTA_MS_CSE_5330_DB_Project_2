@@ -30,6 +30,11 @@ export async function fetchCar(): Promise<Car[]>{
     return response.json();
 }
 
+export async function fetchCarById(carId: number): Promise<Car>{
+    const response=await fetchData("/api/car/"+carId,{method:"GET"});
+    return response.json();
+}
+
 
 
 export interface CarInput{
