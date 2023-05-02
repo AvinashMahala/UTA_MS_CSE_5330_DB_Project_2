@@ -1,3 +1,5 @@
+import { Car } from "../models/Car";
+
 export function formatDate(dateString:string):string{
     return new Date(dateString).toLocaleString("en-US",
     {
@@ -86,6 +88,15 @@ export function formatBlankField(field:string):string{
     else{
         return field;
     }
+}
+
+export function carVehicleIdToCarModelName(carList:Car[],field:string):string{
+    carList.forEach((car)=>{
+        if(car.car_vehicleId.toString()===field){
+            return car.car_model;
+        }
+    });
+    return "NA";
 }
 
 
