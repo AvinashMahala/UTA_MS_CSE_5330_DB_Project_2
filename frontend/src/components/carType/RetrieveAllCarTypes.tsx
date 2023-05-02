@@ -27,6 +27,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
+import { formatLuxuryFlag, formatRates } from "../../utils/formatDate";
 
 export type CarType = {
     typeId: number;
@@ -151,7 +152,7 @@ const RetrieveAllCarTypesView = () => {
       () => [
         {
           accessorKey: 'typeId',
-          header: 'ID',
+          header: 'Type ID',
           enableColumnOrdering: false,
           enableEditing: false, //disable editing on this column
           enableSorting: false,
@@ -162,7 +163,7 @@ const RetrieveAllCarTypesView = () => {
         },
         {
           accessorKey: 'typeName',
-          header: 'Type Name',
+          header: 'Car Type Name',
           size: 50,
           muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
             ...getCommonEditTextFieldProps(cell),
@@ -175,6 +176,8 @@ const RetrieveAllCarTypesView = () => {
           muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
             ...getCommonEditTextFieldProps(cell),
           }),
+          //customize normal cell render on normal non-aggregated rows
+          Cell: ({ cell }) => <>{formatRates(cell.getValue<string>())}</>,
         },
         {
             accessorKey: 'weeklyRate',
@@ -183,15 +186,19 @@ const RetrieveAllCarTypesView = () => {
             muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
               ...getCommonEditTextFieldProps(cell),
             }),
+            //customize normal cell render on normal non-aggregated rows
+            Cell: ({ cell }) => <>{formatRates(cell.getValue<string>())}</>,
           },
 
           {
             accessorKey: 'luxuryFlag',
-            header: 'Luxury Flag',
+            header: 'Is Luxury Car?',
             size: 20,
             muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
               ...getCommonEditTextFieldProps(cell),
             }),
+            //customize normal cell render on normal non-aggregated rows
+            Cell: ({ cell }) => <>{formatLuxuryFlag(cell.getValue<string>())}</>,
           },
       ],
       [getCommonEditTextFieldProps],

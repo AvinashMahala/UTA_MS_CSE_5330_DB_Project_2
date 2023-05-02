@@ -67,7 +67,7 @@ export function formatRates(rates:string):string{
     }
 }
 
-export function luxuryFlag(luxuryFlag:string):string{
+export function formatLuxuryFlag(luxuryFlag:string):string{
     if(luxuryFlag==="Y"){
         return "Yes";
     }
