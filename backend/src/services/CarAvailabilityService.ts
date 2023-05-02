@@ -15,7 +15,10 @@ export class CarAvailabilityService {
     const connection = await this.pool.getConnection();
     try {
       const result = await connection.execute<any>(
-        `SELECT * FROM AVINASH_TBL_CAR_AVAILABILITY`
+        `select a.AVAILABILITYID, a.CARID, a.STARTDATE, a.ENDDATE,b.model from avinash_tbl_car_availability a 
+        join
+        avinash_tbl_car b
+        on a.CARID=b.VEHICLEID`
       );
       return result.rows?.map(
         (carAvailability) =>
@@ -23,7 +26,8 @@ export class CarAvailabilityService {
             carAvailability[0],
             carAvailability[1],
             carAvailability[2],
-            carAvailability[3]
+            carAvailability[3],
+            carAvailability[4]
           )
       );
     } catch (error) {

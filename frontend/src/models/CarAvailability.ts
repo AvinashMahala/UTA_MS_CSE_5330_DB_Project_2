@@ -3,5 +3,6 @@ export interface CarAvailability {
     carId: number;
     startDate: Date;
     endDate: Date;
+    carModel: string;
   }
   

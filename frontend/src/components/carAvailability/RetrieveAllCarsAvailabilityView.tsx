@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { CarAvailability as CarAvailabilityModel } from "../../models/CarAvailability";
 import * as CarAvailabilityApi from "../../network/caravailability_api";
 import { darken } from "@mui/material";
+import * as CarsApi from "../../network/cars_api";
 
 
 import MaterialReactTable, {
@@ -25,14 +26,18 @@ import {
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
 import { formatDate } from "../../utils/formatDate";
+import { Car } from "../../models/Car";
 
 export type CarAvailability = {
     availabilityId: number;
     carId: number;
     startDate: Date;
     endDate: Date;
+    carModel: string;
 };
 
+let carAvailabilityList: CarAvailability[] = [];
+let carArray: Car[] = [];
 
 const RetrieveAllCarsAvailabilityView = () => {
 
@@ -41,8 +46,10 @@ const RetrieveAllCarsAvailabilityView = () => {
     carId: number,
     startDate: Date,
     endDate: Date,
+    carModel: string,
   };
 
+    const [carList, setCarList] = useState<Car[]>(() => []);
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [tableData, setTableData] = useState<CarAvailability[]>(() => []);
     const [validationErrors, setValidationErrors] = useState<{
@@ -58,6 +65,7 @@ const RetrieveAllCarsAvailabilityView = () => {
         carId: values.carId,
         startDate:  values.startDate,
         endDate: values.endDate,
+        carModel: values.carModel,
       };
 
       // Send the API request to update the Car Availability
@@ -79,6 +87,7 @@ const RetrieveAllCarsAvailabilityView = () => {
             carId: values.carId,
             startDate: values.startDate,
             endDate: values.endDate,
+            carModel: values.carModel,
           };
     
           // Send the API request to update the Car Availability
@@ -117,8 +126,18 @@ const RetrieveAllCarsAvailabilityView = () => {
       (
         cell: MRT_Cell<CarAvailability>,
       ): MRT_ColumnDef<CarAvailability>['muiTableBodyCellEditTextFieldProps'] => {
-        return {
-          error: !!validationErrors[cell.id],
+        
+        if(cell.column.id === 'carId'){
+          return {
+            select: true,
+            label: 'Car Model Name',
+            children: carArray.map((option) => (
+              <MenuItem key={option.car_typeId} value={option.car_typeId}>
+                {option.car_model}
+              </MenuItem>
+            )),
+            value: cell.getValue<string>(),
+            error: !!validationErrors[cell.id],
           helperText: validationErrors[cell.id],
           onChange: (e) => {
             const value = e.target.value;
@@ -135,8 +154,35 @@ const RetrieveAllCarsAvailabilityView = () => {
               });
             }
             //cell.setEditingCellValue(value);
-          },
-        };
+          }
+          }
+        }
+        else{
+          return {
+            error: !!validationErrors[cell.id],
+            helperText: validationErrors[cell.id],
+            onChange: (e) => {
+              const value = e.target.value;
+              if (!value) {
+                setValidationErrors((prev) => ({
+                  ...prev,
+                  [cell.id]: 'Required',
+                }));
+              } else {
+                setValidationErrors((prev) => {
+                  const next = { ...prev };
+                  delete next[cell.id];
+                  return next;
+                });
+              }
+              //cell.setEditingCellValue(value);
+            },
+          };
+        }
+        
+        
+        
+        
       },
       [validationErrors],
     );
@@ -156,11 +202,13 @@ const RetrieveAllCarsAvailabilityView = () => {
         },
         {
           accessorKey: 'carId',
-          header: 'carId',
+          header: 'Car Model Name',
           size: 5,
           muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
             ...getCommonEditTextFieldProps(cell),
           }),
+          //customize normal cell render on normal non-aggregated rows
+          Cell: ({ cell }) => <>{carAvailabilityList.filter(a=>a.carId===parseInt(cell.getValue<string>())).map(a => ({ ...a }))[0].carModel}</>,
         },
         {
           accessorKey: 'startDate',
@@ -192,7 +240,14 @@ const RetrieveAllCarsAvailabilityView = () => {
       CarAvailabilityApi.fetchCarAvailability().then((carAvailabilities) => {
         //tableData=carAvailabilities;
         setTableData(carAvailabilities);
+        carAvailabilityList = carAvailabilities;
         console.log(carAvailabilities);
+      });
+      CarsApi.fetchCar().then((cars) => {
+        //tableData=cars;
+        setCarList(cars);
+        carArray = cars;
+        console.log(cars);
       });
     }, []);
   
@@ -200,45 +255,45 @@ const RetrieveAllCarsAvailabilityView = () => {
       <>
         <MaterialReactTable
           displayColumnDefOptions={{
-            'mrt-row-actions': {
-              muiTableHeadCellProps: {
-                align: 'center',
-              },
-              size: 120,
-            },
+            // 'mrt-row-actions': {
+            //   muiTableHeadCellProps: {
+            //     align: 'center',
+            //   },
+            //   size: 120,
+            // },
           }}
           columns={columns}
           data={tableData}
           
-          editingMode="modal" //default
+          //editingMode="modal" //default
           enableColumnOrdering
           initialState={{ columnVisibility: { availabilityId: false } }} //hide firstName column by default
-          enableEditing
+          //enableEditing
           onEditingRowSave={handleSaveRowEdits}
           onEditingRowCancel={handleCancelRowEdits}
-          renderRowActions={({ row, table }) => (
-            <Box sx={{ display: 'flex', gap: '1rem' }}>
-              <Tooltip arrow placement="left" title="Edit">
-                <IconButton onClick={() => table.setEditingRow(row)}>
-                  <Edit />
-                </IconButton>
-              </Tooltip>
-              <Tooltip arrow placement="right" title="Delete">
-                <IconButton color="error" onClick={() => handleDeleteRow(row)}>
-                  <Delete />
-                </IconButton>
-              </Tooltip>
-            </Box>
-          )}
-          renderTopToolbarCustomActions={() => (
-            <Button
-              color="secondary"
-              onClick={() => setCreateModalOpen(true)}
-              variant="contained"
-            >
-              Create New Car Availability
-            </Button>
-          )}
+          // renderRowActions={({ row, table }) => (
+          //   <Box sx={{ display: 'flex', gap: '1rem' }}>
+          //     <Tooltip arrow placement="left" title="Edit">
+          //       <IconButton onClick={() => table.setEditingRow(row)}>
+          //         <Edit />
+          //       </IconButton>
+          //     </Tooltip>
+          //     <Tooltip arrow placement="right" title="Delete">
+          //       <IconButton color="error" onClick={() => handleDeleteRow(row)}>
+          //         <Delete />
+          //       </IconButton>
+          //     </Tooltip>
+          //   </Box>
+          // )}
+          // renderTopToolbarCustomActions={() => (
+          //   <Button
+          //     color="secondary"
+          //     onClick={() => setCreateModalOpen(true)}
+          //     variant="contained"
+          //   >
+          //     Create New Car Availability
+          //   </Button>
+          // )}
         />
         <CreateNewAccountModal
           columns={columns}
