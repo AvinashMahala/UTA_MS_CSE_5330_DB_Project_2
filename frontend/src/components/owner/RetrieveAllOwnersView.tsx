@@ -131,7 +131,18 @@ const RetrieveAllOwnersView = () => {
     (
       cell: MRT_Cell<Owner>
     ): MRT_ColumnDef<Owner>["muiTableBodyCellEditTextFieldProps"] => {
-      return {
+      return cell.column.id === 'ownerType'
+      ? {
+          select: true,
+          children: ownerTypeList.map((option) => (
+            <MenuItem key={option.ownerTypeId} value={option.ownerTypeId}>
+              {option.ownerTypeName}
+            </MenuItem>
+          )),
+        }
+      :
+      
+      {
         error: !!validationErrors[cell.id],
         helperText: validationErrors[cell.id],
         onChange: (e) => {
