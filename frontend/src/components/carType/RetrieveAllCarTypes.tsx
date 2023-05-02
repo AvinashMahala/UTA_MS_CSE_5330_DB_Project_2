@@ -132,6 +132,24 @@ const RetrieveAllCarTypesView = () => {
               {option.optionLabel}
             </MenuItem>
           )),
+          error: !!validationErrors[cell.id],
+          helperText: validationErrors[cell.id],
+          onChange: (e) => {
+            const value = e.target.value;
+            if (!value) {
+              setValidationErrors((prev) => ({
+                ...prev,
+                [cell.id]: 'Required',
+              }));
+            } else {
+              setValidationErrors((prev) => {
+                const next = { ...prev };
+                delete next[cell.id];
+                return next;
+              });
+            }
+            //cell.setEditingCellValue(value);
+          },
         }
       : {
           error: !!validationErrors[cell.id],

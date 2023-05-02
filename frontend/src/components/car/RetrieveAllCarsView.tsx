@@ -2,6 +2,9 @@ import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { Car as CarModel } from "../../models/Car";
 import * as CarsApi from "../../network/cars_api";
 import { darken } from "@mui/material";
+import * as OwnerApi from "../../network/owner_api";
+import * as CarTypeApi from "../../network/cartypes_api";
+import { Select } from "@mui/material";
 
 
 import MaterialReactTable, {
@@ -24,42 +27,55 @@ import {
   Tooltip,
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
+import { Owner } from "../owner/RetrieveAllOwnersView";
+import { CarType } from "../carType/RetrieveAllCarTypes";
 
 export type Car = {
-    vehicleId: number;
-    model: string;
-    year: number;
-    typeId: number;
-    ownerId: number;
+  car_vehicleId: number;
+  car_model?: string;
+  car_year?: number;
+  car_typeId?: number;
+  car_typeName?: string;
+  car_ownerId?: number;
+  car_ownerName?: string;
 };
 
+
+
+
+let carOwnersList:Owner[]=[];
+let carTypesList:CarType[]=[];
 
 const RetrieveAllCarsView = () => {
 
   type CarInput = {
-    vehicleId: number,
-    model: string,
-    year: number,
-    typeId: number,
-    ownerId: number,
+    car_vehicleId: number;
+    car_model?: string;
+    car_year?: number;
+    car_typeId?: number;
+    car_ownerId?: number;
   };
 
+  const [carOwnersData, setCarOwnersData] = useState<Owner[]>(() => []);
+  const [carTypesData, setCarTypesData] = useState<CarType[]>(() => []);
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [tableData, setTableData] = useState<Car[]>(() => []);
     const [validationErrors, setValidationErrors] = useState<{
       [cellId: string]: string;
     }>({});
+
+    
   
     const handleCreateNewRow = (values: Car) => {
       tableData.push(values);
       setTableData([...tableData]);
 
       const insertCar: CarInput = {
-        vehicleId: 0,
-        model: values.model,
-        year: values.year,
-        typeId: values.typeId,
-        ownerId: values.ownerId,
+        car_vehicleId: 0,
+        car_model: values.car_model,
+        car_year: values.car_year,
+        car_typeId: values.car_typeId,
+        car_ownerId: values.car_ownerId,
       };
 
       // Send the API request to update the Owner
@@ -78,15 +94,15 @@ const RetrieveAllCarsView = () => {
           //send/receive api updates here, then refetch or update local table data for re-render
           const updatedCar: CarInput = {
             
-            vehicleId: parseInt(values.vehicleId),
-            model: values.model,
-            year: values.year,
-            typeId: values.typeId,
-            ownerId: values.ownerId,
+            car_vehicleId: parseInt(values.car_vehicleId),
+            car_model: values.car_model,
+            car_year: values.car_year,
+            car_typeId: values.car_typeId,
+            car_ownerId: values.car_ownerId,
           };
     
           // Send the API request to update the Owner
-          await CarsApi.updateCar(updatedCar.vehicleId, updatedCar);
+          await CarsApi.updateCar(updatedCar.car_vehicleId, updatedCar);
 
           setTableData([...tableData]);
           exitEditingMode(); //required to exit editing mode and close modal
@@ -100,13 +116,13 @@ const RetrieveAllCarsView = () => {
     const handleDeleteRow = useCallback(
       (row: MRT_Row<Car>) => {
         if (
-          !window.confirm(`Are you sure you want to delete ${row.getValue('model')}`)
+          !window.confirm(`Are you sure you want to delete ${row.getValue('car_model')}`)
         ) {
           return;
         }
         //send api delete request here, then refetch or update local table data for re-render
 
-        CarsApi.deleteCar(row.getValue('vehicleId')).then(() => {
+        CarsApi.deleteCar(row.getValue('car_vehicleId')).then(() => {
           console.log("Car Deleted!");
         });
 
@@ -121,26 +137,93 @@ const RetrieveAllCarsView = () => {
       (
         cell: MRT_Cell<Car>,
       ): MRT_ColumnDef<Car>['muiTableBodyCellEditTextFieldProps'] => {
+        
+      if(cell.column.id === 'car_typeId'){
         return {
+          select: true,
+          label: 'Car Type',
+          children: carTypesData.map((option) => (
+            <MenuItem key={option.typeId} value={option.typeId}>
+              {option.typeName}
+            </MenuItem>
+          )),
           error: !!validationErrors[cell.id],
-          helperText: validationErrors[cell.id],
-          onChange: (e) => {
-            const value = e.target.value;
-            if (!value) {
-              setValidationErrors((prev) => ({
-                ...prev,
-                [cell.id]: 'Required',
-              }));
-            } else {
-              setValidationErrors((prev) => {
-                const next = { ...prev };
-                delete next[cell.id];
-                return next;
-              });
-            }
-            //cell.setEditingCellValue(value);
-          },
-        };
+        helperText: validationErrors[cell.id],
+        onChange: (e) => {
+          const value = e.target.value;
+          if (!value) {
+            setValidationErrors((prev) => ({
+              ...prev,
+              [cell.id]: 'Required',
+            }));
+          } else {
+            setValidationErrors((prev) => {
+              const next = { ...prev };
+              delete next[cell.id];
+              return next;
+            });
+          }
+          //cell.setEditingCellValue(value);
+        }
+        }
+      }
+      else if(cell.column.id === 'car_ownerId'){
+        return {
+          select: true,
+          label: 'Car Owner',
+          children: carOwnersData.map((option) => (
+            <MenuItem key={option.ownerId} value={option.ownerId}>
+              {option.name}
+            </MenuItem>
+          )),
+          error: !!validationErrors[cell.id],
+        helperText: validationErrors[cell.id],
+        onChange: (e) => {
+          const value = e.target.value;
+          if (!value) {
+            setValidationErrors((prev) => ({
+              ...prev,
+              [cell.id]: 'Required',
+            }));
+          } else {
+            setValidationErrors((prev) => {
+              const next = { ...prev };
+              delete next[cell.id];
+              return next;
+            });
+          }
+          //cell.setEditingCellValue(value);
+        }
+        }
+      }
+      else if(cell.column.id === 'car_typeName' || cell.column.id === 'car_ownerName'){
+        return {
+          style: { display: 'none' },
+        }
+      }
+      else{
+      
+      return {
+        error: !!validationErrors[cell.id],
+        helperText: validationErrors[cell.id],
+        onChange: (e) => {
+          const value = e.target.value;
+          if (!value) {
+            setValidationErrors((prev) => ({
+              ...prev,
+              [cell.id]: 'Required',
+            }));
+          } else {
+            setValidationErrors((prev) => {
+              const next = { ...prev };
+              delete next[cell.id];
+              return next;
+            });
+          }
+          //cell.setEditingCellValue(value);
+        }
+      };
+    }
       },
       [validationErrors],
     );
@@ -148,8 +231,8 @@ const RetrieveAllCarsView = () => {
     const columns = useMemo<MRT_ColumnDef<Car>[]>(
       () => [
         {
-          accessorKey: 'vehicleId',
-          header: 'vehicleId',
+          accessorKey: 'car_vehicleId',
+          header: 'Vehicle ID',
           enableColumnOrdering: false,
           enableEditing: false, //disable editing on this column
           enableSorting: false,
@@ -159,32 +242,48 @@ const RetrieveAllCarsView = () => {
           
         },
         {
-          accessorKey: 'model',
-          header: 'model',
+          accessorKey: 'car_model',
+          header: 'Car Model',
           size: 5,
           muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
             ...getCommonEditTextFieldProps(cell),
           }),
         },
         {
-          accessorKey: 'year',
-          header: 'year',
+          accessorKey: 'car_year',
+          header: 'Year',
           size: 20,
           muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
             ...getCommonEditTextFieldProps(cell),
           }),
         },
         {
-            accessorKey: 'typeId',
-            header: 'typeId',
+            accessorKey: 'car_typeName',
+            header: 'Car Type Name',
             size: 20,
             muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
               ...getCommonEditTextFieldProps(cell),
             }),
           },
         {
-            accessorKey: 'ownerId',
-            header: 'ownerId',
+            accessorKey: 'car_ownerName',
+            header: 'Car Owner Name',
+            size: 20,
+            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+              ...getCommonEditTextFieldProps(cell),
+            }),
+          },
+          {
+            accessorKey: 'car_typeId',
+            header: 'car_typeId',
+            size: 20,
+            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+              ...getCommonEditTextFieldProps(cell),
+            }),
+          },
+          {
+            accessorKey: 'car_ownerId',
+            header: 'car_ownerId',
             size: 20,
             muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
               ...getCommonEditTextFieldProps(cell),
@@ -201,6 +300,19 @@ const RetrieveAllCarsView = () => {
         setTableData(cars);
         console.log(cars);
       });
+      OwnerApi.fetchOwner().then((owners) => {
+        setCarOwnersData(owners);
+        carOwnersList=owners;
+        console.log(owners);
+      });
+
+      CarTypeApi.fetchCarTypes().then((carTypes) => {
+        setCarTypesData(carTypes);
+        carTypesList=carTypes;
+        console.log(carTypes);
+      });
+
+
     }, []);
   
     return (
@@ -219,7 +331,7 @@ const RetrieveAllCarsView = () => {
           
           editingMode="modal" //default
           enableColumnOrdering
-          initialState={{ columnVisibility: { vehicleId: false } }} //hide firstName column by default
+          initialState={{ columnVisibility: { car_vehicleId: false,car_typeId:false,car_ownerId:false } }} //hide firstName column by default
           enableEditing
           onEditingRowSave={handleSaveRowEdits}
           onEditingRowCancel={handleCancelRowEdits}
@@ -277,6 +389,9 @@ const RetrieveAllCarsView = () => {
         return acc;
       }, {} as any),
     );
+
+    const [selectedCarType, setSelectedCarType] = useState('');
+    const [selectedCarOwner, setSelectedCarOwner] = useState('');
   
     const handleSubmit = () => {
       //put your validation logic here
@@ -296,7 +411,10 @@ const RetrieveAllCarsView = () => {
                 gap: '1.5rem',
               }}
             >
-              {columns.filter(column=>column.accessorKey !=="vehicleId").map((column) => (
+              {columns.filter(column=>column.accessorKey !=="car_vehicleId" 
+              && column.accessorKey!=="car_typeId" && column.accessorKey!=="car_ownerId"
+              && column.accessorKey!=="car_typeName" && column.accessorKey!=="car_ownerName"
+              ).map((column) => (
                 <TextField
                   key={column.accessorKey}
                   label={column.header}
@@ -306,6 +424,70 @@ const RetrieveAllCarsView = () => {
                   }
                 />
               ))}
+
+             {columns
+              .filter((column) => column.accessorKey === "car_typeId")
+              .map((column) => (
+                <Select
+                  label={"Car Type Name"}
+                  key={column.accessorKey}
+                  name={column.accessorKey}
+                  value={selectedCarType}
+                  // onChange={(event) => setSelectedOwnerType(event.target.value)}
+                  onChange={(event) =>{
+                    setValues({ ...values, [event.target.name]: event.target.value });
+                    setSelectedCarType(event.target.value);
+                  }
+                  }
+                  displayEmpty
+                  sx={{ minWidth: 120 }}
+                >
+                  <MenuItem value="" disabled>
+                  {column.header}
+                  </MenuItem>
+                  {carTypesList.map((option) => (
+                    <MenuItem
+                      key={option.typeId}
+                      value={option.typeId}
+                    >
+                      {option.typeName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              ))}
+
+              {columns
+              .filter((column) => column.accessorKey === "car_ownerId")
+              .map((column) => (
+                <Select
+                  label={"Car Owner Name"}
+                  key={column.accessorKey}
+                  name={column.accessorKey}
+                  value={selectedCarOwner}
+                  // onChange={(event) => setSelectedOwnerType(event.target.value)}
+                  onChange={(event) =>{
+                    setValues({ ...values, [event.target.name]: event.target.value });
+                    setSelectedCarOwner(event.target.value);
+                  }
+                  }
+                  displayEmpty
+                  sx={{ minWidth: 120 }}
+                >
+                  <MenuItem value="" disabled>
+                  {column.header}
+                  </MenuItem>
+                  {carOwnersList.map((option) => (
+                    <MenuItem
+                      key={option.ownerId}
+                      value={option.ownerId}
+                    >
+                      {option.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              ))} 
+             
+
             </Stack>
           </form>
         </DialogContent>

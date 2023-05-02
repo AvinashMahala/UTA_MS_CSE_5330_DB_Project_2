@@ -33,11 +33,11 @@ export async function fetchCar(): Promise<Car[]>{
 
 
 export interface CarInput{
-    vehicleId: number;
-    model: string;
-    year: number;
-    typeId: number;
-    ownerId: number;
+    car_vehicleId: number;
+    car_model?: string;
+    car_year?: number;
+    car_typeId?: number;
+    car_ownerId?: number;
 }
 
 export async function createCar(car: CarInput):Promise<Car>{

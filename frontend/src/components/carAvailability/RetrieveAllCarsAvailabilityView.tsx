@@ -24,6 +24,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
+import { formatDate } from "../../utils/formatDate";
 
 export type CarAvailability = {
     availabilityId: number;
@@ -168,6 +169,9 @@ const RetrieveAllCarsAvailabilityView = () => {
           muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
             ...getCommonEditTextFieldProps(cell),
           }),
+          //customize normal cell render on normal non-aggregated rows
+          Cell: ({ cell }) => <>{formatDate(cell.getValue<string>())}</>,
+          
         },
         {
             accessorKey: 'endDate',
@@ -176,6 +180,8 @@ const RetrieveAllCarsAvailabilityView = () => {
             muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
               ...getCommonEditTextFieldProps(cell),
             }),
+            //customize normal cell render on normal non-aggregated rows
+          Cell: ({ cell }) => <>{formatDate(cell.getValue<string>())}</>,
           },
       ],
       [getCommonEditTextFieldProps],
