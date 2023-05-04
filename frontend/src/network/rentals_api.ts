@@ -1,5 +1,5 @@
 import { ConflictError, UnauthorizedError } from "../errors/http_errors";
-import { Rental } from "../models/Rental";
+import { Rental, RentalView } from "../models/Rental";
 import { User } from "../models/user";
 
 async function fetchData(input: RequestInfo, init?: RequestInit){
@@ -24,7 +24,7 @@ async function fetchData(input: RequestInfo, init?: RequestInit){
     }
 }
 
-export async function fetchRental(): Promise<Rental[]>{
+export async function fetchRental(): Promise<RentalView[]>{
     const response=await fetchData("/api/rental/",{method:"GET"});
     
     return response.json();

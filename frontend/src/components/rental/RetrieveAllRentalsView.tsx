@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
-import { Rental as RentalModel } from "../../models/Rental";
+import { Rental as RentalModel, RentalView } from "../../models/Rental";
 import * as RentalApi from "../../network/rentals_api";
 import { darken } from "@mui/material";
+import * as CarsApi from "../../network/cars_api";
+import * as CustomerApi from "../../network/customer_api";
 
 
 import MaterialReactTable, {
@@ -25,8 +27,11 @@ import {
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
 import { formatAmountDue, formatDate, formatNoOfDaysOrWeeks, formatRentalType } from "../../utils/formatDate";
+import { Car } from "../../models/Car";
+import { Owner } from "../../models/Owner";
+import { Customer } from "../../models/Customer";
 
-export type Rental = {
+export type rental = {
     rentalId: number;
     rentalType: string;
     noOfDays: number | null;
@@ -34,10 +39,12 @@ export type Rental = {
     startDate: Date;
     returnDate: Date;
     amountDue: number;
-    carId: number;
+    vehicleId: number;
     customerId: number;
 };
 
+let customersList:Customer[]=[];
+let carsList:Car[]=[];
 
 const RetrieveAllRentalsView = () => {
 
@@ -54,12 +61,12 @@ const RetrieveAllRentalsView = () => {
   };
 
     const [createModalOpen, setCreateModalOpen] = useState(false);
-    const [tableData, setTableData] = useState<Rental[]>(() => []);
+    const [tableData, setTableData] = useState<RentalView[]>(() => []);
     const [validationErrors, setValidationErrors] = useState<{
       [cellId: string]: string;
     }>({});
   
-    const handleCreateNewRow = (values: Rental) => {
+    const handleCreateNewRow = (values: RentalView) => {
       tableData.push(values);
       setTableData([...tableData]);
 
@@ -71,7 +78,7 @@ const RetrieveAllRentalsView = () => {
         startDate: values.startDate,
         returnDate: values.returnDate,
         amountDue: values.amountDue,
-        carId: values.carId,
+        carId: values.vehicleId,
         customerId: values.customerId,
       };
 
@@ -82,7 +89,7 @@ const RetrieveAllRentalsView = () => {
 
     };
     
-    const handleSaveRowEdits: MaterialReactTableProps<Rental>['onEditingRowSave'] =
+    const handleSaveRowEdits: MaterialReactTableProps<RentalView>['onEditingRowSave'] =
       async ({ exitEditingMode, row, values }) => {
         if (!Object.keys(validationErrors).length) {
           tableData[row.index] = values;
@@ -114,7 +121,7 @@ const RetrieveAllRentalsView = () => {
     };
   
     const handleDeleteRow = useCallback(
-      (row: MRT_Row<Rental>) => {
+      (row: MRT_Row<RentalView>) => {
         if (
           !window.confirm(`Are you sure you want to delete ${row.getValue('rentalType')}`)
         ) {
@@ -135,8 +142,119 @@ const RetrieveAllRentalsView = () => {
   
     const getCommonEditTextFieldProps = useCallback(
       (
-        cell: MRT_Cell<Rental>,
-      ): MRT_ColumnDef<Rental>['muiTableBodyCellEditTextFieldProps'] => {
+        cell: MRT_Cell<RentalView>,
+      ): MRT_ColumnDef<RentalView>['muiTableBodyCellEditTextFieldProps'] => {
+        if(cell.column.id === 'vehicleId'){
+          return {
+            select: true,
+            label: 'Car Type',
+            children: carsList.map((option) => (
+              <MenuItem key={option.car_vehicleId} value={option.car_vehicleId}>
+                {option.car_model}
+              </MenuItem>
+            )),
+            error: !!validationErrors[cell.id],
+          helperText: validationErrors[cell.id],
+          onChange: (e) => {
+            const value = e.target.value;
+            if (!value) {
+              setValidationErrors((prev) => ({
+                ...prev,
+                [cell.id]: 'Required',
+              }));
+            } else {
+              setValidationErrors((prev) => {
+                const next = { ...prev };
+                delete next[cell.id];
+                return next;
+              });
+            }
+            //cell.setEditingCellValue(value);
+          }
+          }
+        }
+        else if(cell.column.id === 'customerId'){
+          return {
+            select: true,
+            label: 'Customer Name',
+            children: customersList.map((option) => (
+              <MenuItem key={option.idNo} value={option.idNo}>
+                {option.name}
+              </MenuItem>
+            )),
+            error: !!validationErrors[cell.id],
+          helperText: validationErrors[cell.id],
+          onChange: (e) => {
+            const value = e.target.value;
+            if (!value) {
+              setValidationErrors((prev) => ({
+                ...prev,
+                [cell.id]: 'Required',
+              }));
+            } else {
+              setValidationErrors((prev) => {
+                const next = { ...prev };
+                delete next[cell.id];
+                return next;
+              });
+            }
+            //cell.setEditingCellValue(value);
+          }
+          }
+        }
+        else if(cell.column.id === 'model' || cell.column.id === 'customerName'){
+          return {
+            style: { display: 'none' },
+          }
+        }
+        else if(cell.column.id === 'startDate'){
+          return {
+            type: 'date',
+            error: !!validationErrors[cell.id],
+          helperText: validationErrors[cell.id],
+          onChange: (e) => {
+            const value = e.target.value;
+            if (!value) {
+              setValidationErrors((prev) => ({
+                ...prev,
+                [cell.id]: 'Required',
+              }));
+            } else {
+              setValidationErrors((prev) => {
+                const next = { ...prev };
+                delete next[cell.id];
+                return next;
+              });
+            }
+            //cell.setEditingCellValue(value);
+          }
+          }
+        }
+        else if(cell.column.id === 'returnDate'){
+          return {
+            type: 'date',
+            error: !!validationErrors[cell.id],
+          helperText: validationErrors[cell.id],
+          onChange: (e) => {
+            const value = e.target.value;
+            if (!value) {
+              setValidationErrors((prev) => ({
+                ...prev,
+                [cell.id]: 'Required',
+              }));
+            } else {
+              setValidationErrors((prev) => {
+                const next = { ...prev };
+                delete next[cell.id];
+                return next;
+              });
+            }
+            //cell.setEditingCellValue(value);
+          }
+          }
+        }
+        else{
+        
         return {
           error: !!validationErrors[cell.id],
           helperText: validationErrors[cell.id],
@@ -155,29 +273,29 @@ const RetrieveAllRentalsView = () => {
               });
             }
             //cell.setEditingCellValue(value);
-          },
+          }
         };
+      }
       },
       [validationErrors],
     );
   
-    const columns = useMemo<MRT_ColumnDef<Rental>[]>(
+    const columns = useMemo<MRT_ColumnDef<RentalView>[]>(
       () => [
         {
           accessorKey: 'rentalId',
-          header: 'rentalId',
+          header: 'Rental ID',
           enableColumnOrdering: false,
           enableEditing: false, //disable editing on this column
           enableSorting: false,
           enableHiding: false,
-          size: 10,
+          size: 0,
           editable: "never"
-          
         },
         {
           accessorKey: 'rentalType',
-          header: 'rentalType',
-          size: 5,
+          header: 'Rental Type',
+          size: 10,
           muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
             ...getCommonEditTextFieldProps(cell),
           }),
@@ -185,9 +303,63 @@ const RetrieveAllRentalsView = () => {
           Cell: ({ cell }) => <>{formatRentalType(cell.getValue<string>())}</>,
         },
         {
+          accessorKey: 'vehicleId',
+          header: 'Car ID',
+          size: 16,
+          muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+            ...getCommonEditTextFieldProps(cell),
+          }),
+          
+        },
+        {
+          accessorKey: 'model',
+          header: 'Vehicle Model',
+          size: 16,
+          muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+            ...getCommonEditTextFieldProps(cell),
+          }),
+          
+        },
+        {
+          accessorKey: 'customerId',
+          header: 'Customer ID',
+          size: 16,
+          muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+            ...getCommonEditTextFieldProps(cell),
+          }),
+        },
+        {
+          accessorKey: 'customerName',
+          header: 'Customer Name',
+          size: 16,
+          muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+            ...getCommonEditTextFieldProps(cell),
+          }),
+        },
+        {
+          accessorKey: 'startDate',
+          header: 'Start Date',
+          size: 16,
+          muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+            ...getCommonEditTextFieldProps(cell),
+          }),
+          //customize normal cell render on normal non-aggregated rows
+          Cell: ({ cell }) => <>{formatDate(cell.getValue<string>())}</>,
+        },
+        {
+          accessorKey: 'returnDate',
+          header: 'Return Date',
+          size: 16,
+          muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+            ...getCommonEditTextFieldProps(cell),
+          }),
+          //customize normal cell render on normal non-aggregated rows
+          Cell: ({ cell }) => <>{formatDate(cell.getValue<string>())}</>,
+        },
+        {
           accessorKey: 'noOfDays',
-          header: 'noOfDays',
-          size: 20,
+          header: 'No. of Days',
+          size: 5,
           muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
             ...getCommonEditTextFieldProps(cell),
           }),
@@ -196,8 +368,8 @@ const RetrieveAllRentalsView = () => {
         },
         {
             accessorKey: 'noOfWeeks',
-            header: 'noOfWeeks',
-            size: 20,
+            header: 'No. of Weeks',
+            size: 5,
             muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
               ...getCommonEditTextFieldProps(cell),
             }),
@@ -205,49 +377,14 @@ const RetrieveAllRentalsView = () => {
             Cell: ({ cell }) => <>{formatNoOfDaysOrWeeks(cell.getValue<string>())}</>,
           },
         {
-            accessorKey: 'startDate',
-            header: 'startDate',
-            size: 20,
-            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-              ...getCommonEditTextFieldProps(cell),
-            }),
-            //customize normal cell render on normal non-aggregated rows
-            Cell: ({ cell }) => <>{formatDate(cell.getValue<string>())}</>,
-          },{
-            accessorKey: 'returnDate',
-            header: 'returnDate',
-            size: 20,
-            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-              ...getCommonEditTextFieldProps(cell),
-            }),
-            //customize normal cell render on normal non-aggregated rows
-            Cell: ({ cell }) => <>{formatDate(cell.getValue<string>())}</>,
-          },{
             accessorKey: 'amountDue',
-            header: 'amountDue',
-            size: 20,
+            header: 'Amount Due',
+            size: 16,
             muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
               ...getCommonEditTextFieldProps(cell),
             }),
             //customize normal cell render on normal non-aggregated rows
             Cell: ({ cell }) => <>{formatAmountDue(cell.getValue<string>())}</>,
-          },
-          {
-            accessorKey: 'carId',
-            header: 'carId',
-            size: 5,
-            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-              ...getCommonEditTextFieldProps(cell),
-            }),
-            
-          },
-          {
-            accessorKey: 'customerId',
-            header: 'customerId',
-            size: 5,
-            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-              ...getCommonEditTextFieldProps(cell),
-            }),
           },
       ],
       [getCommonEditTextFieldProps],
@@ -260,6 +397,17 @@ const RetrieveAllRentalsView = () => {
         setTableData(rentals);
         console.log(rentals);
       });
+      CarsApi.fetchCar().then((cars) => {
+        //tableData=cars;
+        carsList=cars;
+        console.log(cars);
+      });
+      CustomerApi.fetchCustomers().then((customers) => {
+        //tableData=customers;
+        customersList=customers;
+        console.log(customers);
+      });
+
     }, []);
   
     return (
@@ -270,7 +418,7 @@ const RetrieveAllRentalsView = () => {
               muiTableHeadCellProps: {
                 align: 'center',
               },
-              size: 120,
+              size: 90,
             },
           }}
           columns={columns}
@@ -278,7 +426,7 @@ const RetrieveAllRentalsView = () => {
           
           editingMode="modal" //default
           enableColumnOrdering
-          initialState={{ columnVisibility: { rentalId: false } }} //hide firstName column by default
+          initialState={{ columnVisibility: { rentalId: false, vehicleId: false, customerId: false } }} //hide firstName column by default
           enableEditing
           onEditingRowSave={handleSaveRowEdits}
           onEditingRowCancel={handleCancelRowEdits}
@@ -317,9 +465,9 @@ const RetrieveAllRentalsView = () => {
   };
   
   interface CreateModalProps {
-    columns: MRT_ColumnDef<Rental>[];
+    columns: MRT_ColumnDef<RentalView>[];
     onClose: () => void;
-    onSubmit: (values: Rental) => void;
+    onSubmit: (values: RentalView) => void;
     open: boolean;
   }
   

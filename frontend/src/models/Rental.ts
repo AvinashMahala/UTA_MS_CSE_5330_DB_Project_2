@@ -10,3 +10,16 @@ export interface Rental {
     customerId: number;
   }
   
+  export interface RentalView {
+    rentalId: number;
+    rentalType: string;
+    vehicleId: number;
+    model: string;
+    customerId: number;
+    customerName: string;
+    startDate: Date;
+    returnDate: Date;
+    noOfDays: number;
+    noOfWeeks: number;
+    amountDue: number;
+    }

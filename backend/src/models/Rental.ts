@@ -31,4 +31,33 @@ export class Rental {
       this.customerId = customerId;
     }
   }
+
   
+  
+  export class RentalView {
+    rentalId: number;
+    rentalType: string;
+    vehicleId: number;
+    model: string;
+    customerId: number;
+    customerName: string;
+    startDate: Date;
+    returnDate: Date;
+    noOfDays: number;
+    noOfWeeks: number;
+    amountDue: number;
+    
+    constructor(rentalId: number, rentalType: string, vehicleId: number, model: string, customerId: number, customerName: string, startDate: Date, returnDate: Date, noOfDays: number, noOfWeeks: number, amountDue: number) {
+      this.rentalId = rentalId;
+      this.rentalType = rentalType;
+      this.vehicleId = vehicleId;
+      this.model = model;
+      this.customerId = customerId;
+      this.customerName = customerName;
+      this.startDate = startDate;
+      this.returnDate = returnDate;
+      this.noOfDays = noOfDays;
+      this.noOfWeeks = noOfWeeks;
+      this.amountDue = amountDue;
+    }
+    }
