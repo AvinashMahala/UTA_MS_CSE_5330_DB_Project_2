@@ -79,6 +79,11 @@ const RetrieveAllOwnersView = () => {
     OwnerApi.createOwner(insertOwner).then(() => {
       console.log("Owner added!");
     });
+    OwnerApi.fetchOwner().then((owners) => {
+      //tableData=owners;
+      setTableData(owners);
+      console.log(owners);
+    });
   };
 
   const handleSaveRowEdits: MaterialReactTableProps<Owner>["onEditingRowSave"] =
@@ -97,7 +102,11 @@ const RetrieveAllOwnersView = () => {
         // Send the API request to update the Owner
         await OwnerApi.updateOwner(updatedOwner.ownerId, updatedOwner);
 
-        setTableData([...tableData]);
+        OwnerApi.fetchOwner().then((owners) => {
+          //tableData=owners;
+          setTableData(owners);
+          console.log(owners);
+        });
         exitEditingMode(); //required to exit editing mode and close modal
       }
     };
@@ -121,8 +130,11 @@ const RetrieveAllOwnersView = () => {
         console.log("Owner Deleted!");
       });
 
-      tableData.splice(row.index, 1);
-      setTableData([...tableData]);
+      OwnerApi.fetchOwner().then((owners) => {
+        //tableData=owners;
+        setTableData(owners);
+        console.log(owners);
+      });
     },
     [tableData]
   );

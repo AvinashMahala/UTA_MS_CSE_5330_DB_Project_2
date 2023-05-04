@@ -63,6 +63,11 @@ const RetrieveAllCustomersView = () => {
       CustomerApi.createCustomer(insertCustomer).then(() => {
         console.log("Customer added");
       });
+      CustomerApi.fetchCustomers().then((customers) => {
+        //tableData=customers;
+        setTableData(customers);
+        console.log(customers);
+      });
 
     };
     
@@ -82,7 +87,11 @@ const RetrieveAllCustomersView = () => {
           // Send the API request to update the customer
           await CustomerApi.updateCustomer(updatedCustomer.idNo, updatedCustomer);
 
-          setTableData([...tableData]);
+          CustomerApi.fetchCustomers().then((customers) => {
+            //tableData=customers;
+            setTableData(customers);
+            console.log(customers);
+          });
           exitEditingMode(); //required to exit editing mode and close modal
         }
       };
@@ -105,8 +114,11 @@ const RetrieveAllCustomersView = () => {
         });
 
 
-        tableData.splice(row.index, 1);
-        setTableData([...tableData]);
+        CustomerApi.fetchCustomers().then((customers) => {
+          //tableData=customers;
+          setTableData(customers);
+          console.log(customers);
+        });
       },
       [tableData],
     );

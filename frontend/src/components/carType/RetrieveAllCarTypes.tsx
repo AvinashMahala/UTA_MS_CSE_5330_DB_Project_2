@@ -70,6 +70,11 @@ const RetrieveAllCarTypesView = () => {
       CarTypeApi.createCarType(insertCarType).then(() => {
         console.log("Car Type added!");
       });
+      CarTypeApi.fetchCarTypes().then((carTypes) => {
+        //tableData=carTypes;
+        setTableData(carTypes);
+        console.log(carTypes);
+      });
 
     };
     
@@ -91,7 +96,11 @@ const RetrieveAllCarTypesView = () => {
           // Send the API request to update the CarType
           await CarTypeApi.updateCarType(updatedCarType.typeId, updatedCarType);
 
-          setTableData([...tableData]);
+          CarTypeApi.fetchCarTypes().then((carTypes) => {
+            //tableData=carTypes;
+            setTableData(carTypes);
+            console.log(carTypes);
+          });
           exitEditingMode(); //required to exit editing mode and close modal
         }
       };
@@ -114,8 +123,14 @@ const RetrieveAllCarTypesView = () => {
         });
 
 
-        tableData.splice(row.index, 1);
-        setTableData([...tableData]);
+        // tableData.splice(row.index, 1);
+        // setTableData([...tableData]);
+
+        CarTypeApi.fetchCarTypes().then((carTypes) => {
+          //tableData=carTypes;
+          setTableData(carTypes);
+          console.log(carTypes);
+        });
       },
       [tableData],
     );

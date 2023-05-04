@@ -81,6 +81,12 @@ const RetrieveAllCarsView = () => {
       // Send the API request to update the Owner
       CarsApi.createCar(insertCar).then(() => {
         console.log("Car added!");
+        
+      });
+      CarsApi.fetchCar().then((cars) => {
+        //tableData=cars;
+        setTableData(cars);
+        console.log(cars);
       });
 
     };
@@ -104,7 +110,11 @@ const RetrieveAllCarsView = () => {
           // Send the API request to update the Owner
           await CarsApi.updateCar(updatedCar.car_vehicleId, updatedCar);
 
-          setTableData([...tableData]);
+          CarsApi.fetchCar().then((cars) => {
+            //tableData=cars;
+            setTableData(cars);
+            console.log(cars);
+          });
           exitEditingMode(); //required to exit editing mode and close modal
         }
       };
@@ -275,7 +285,7 @@ const RetrieveAllCarsView = () => {
           },
           {
             accessorKey: 'car_typeId',
-            header: 'car_typeId',
+            header: 'Car Type',
             size: 20,
             muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
               ...getCommonEditTextFieldProps(cell),
@@ -283,7 +293,7 @@ const RetrieveAllCarsView = () => {
           },
           {
             accessorKey: 'car_ownerId',
-            header: 'car_ownerId',
+            header: 'Car Owner',
             size: 20,
             muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
               ...getCommonEditTextFieldProps(cell),
