@@ -16,12 +16,26 @@ import { CarRoutes } from "./routes/CarRoutes";
 import { RentalRoutes } from "./routes/RentalRoutes";
 import { CarAvailabilityRoutes } from "./routes/CarAvailabilityRoutes";
 import { OwnerRoutes } from "./routes/OwnerRoutes";
+import cors from "cors";
+
 
 interface SessionData extends session.SessionData {
   [key: string]: any;
 }
 
 const app = express();
+
+
+
+app.use(
+  cors({
+    allowedHeaders:"*",
+    origin: "*",
+    methods: "*",
+  })
+);
+
+
 
 app.use(morgan("dev"));
 
@@ -33,8 +47,8 @@ oracledb
     user: env.ORACLE_DB_USER,
     password: env.ORACLE_DB_PASSWORD,
     connectString: env.ORACLE_DB_CONNECTION_STRING,
-    poolMin: 10,
-    poolMax: 10,
+    poolMin: 1,
+    poolMax: 1,
   })
   .then((pool) => {
     console.log("Oracle Connection Pool Created!");
